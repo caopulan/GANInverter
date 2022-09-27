@@ -29,10 +29,10 @@ Different methods and training strategies are convenient to compose and add. We 
 ## Citation
 If you use this toolbox for your research, please cite our repo.
 ```
-@misc{cao2022maepriv,
+@misc{cao2022ganinverter,
   author       = {Pu Cao and Dongxu Liu and Lu Yang and Qing Song},
   title        = {GAN Inverter},
-  howpublished = {\url{https://github.com/caopulan/GAN Inverter}},
+  howpublished = {\url{https://github.com/caopulan/GANInverter}},
   year         = {2022},
 }
 ```
