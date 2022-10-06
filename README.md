@@ -56,9 +56,9 @@ Note: ```E```/```O``` means encoder-based and optimization-based methods.
 | :--: | :--------------: | :------------------------------------------------: | :----------------------------------------: | :------: | :----: |
 |   :white_medium_square:   |    HyperStyle    | [code](https://github.com/yuval-alaluf/hyperstyle) | [paper](https://arxiv.org/abs/2111.15666)  | CVPR2022 |        |
 |   :white_medium_square:   |       HFGI       |    [code](https://github.com/Tengfei-Wang/HFGI)    | [paper](https://arxiv.org/pdf/2109.06590)  | CVPR2022 |        |
-|   :white_medium_square:   |       SAM        |                                                    |                                            | CVPR2022 |        |
-|   :white_medium_square:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [code](https://github.com/danielroich/PTI) | TOG2022  |        |
-|   :white_medium_square:   | Near Perfect GAN |                                                    |                                            |  Arxiv   |        |
+|   :white_medium_square:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |        |
+|   :white_medium_square:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |        |
+|   :white_medium_square:   | Near Perfect GAN Inversion | - | [paper](https://arxiv.org/abs/2202.11833) |  Arxiv   |        |
 
 ### 3. Editing Methods
 
