@@ -1,0 +1,16 @@
+exp_dir: "experiments/optim/ffhq"
+
+# Data
+test_dataset_path: './data/CelebA-HQ/test'
+test_batch_size: 8
+test_workers: 8
+stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
+
+# Hyper-parameter of optimization
+optim_step: 1000
+optim_l2_lambda: 0.
+optim_lpips_lambda: 1.  # only use lpips loss
+
+noise: 0.05
+noise_ramp: 0.75
+noise_regularize: 1e5

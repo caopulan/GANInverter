@@ -1,0 +1,31 @@
+exp_dir: "experiments/lsap/ffhq_lsap_r50"
+
+# Data
+train_dataset_path: './data/FFHQ'
+test_dataset_path: './data/CelebA-HQ/test'
+
+# Hyper-parameter of training
+stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
+batch_size: 8
+workers: 8
+test_batch_size: 8
+test_workers: 8
+start_from_latent_avg: True
+
+# Image Loss
+lpips_lambda: 0.8
+id_lambda: 0.1
+l2_lambda: 1.0
+w_norm_lambda: 0.
+delta_norm_lambda: 2e-4
+
+# Alignment Loss
+sncd_lambda: 0.5
+
+# Progressive Training
+progressive_start: 20000
+progressive_step_every: 100 #2000
+
+# Wandb
+#use_wandb: True
+wandb_project: ffhq-inversion

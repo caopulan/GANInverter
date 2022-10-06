@@ -1,0 +1,6 @@
+loguru
+matplotlib
+ninja
+opencv-python
+pyyaml
+wandb
