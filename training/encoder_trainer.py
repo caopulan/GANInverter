@@ -180,11 +180,14 @@ class EncoderTrainer:
     def configure_optimizers(self, checkpoint):
         requires_grad(self.decoder, False)
         if self.opts.optimizer == 'adam':
-            optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.opts.learning_rate)
-        elif self.opts.optimizer == 'adam':
-            optimizer = torch.optim.AdamW(self.encoder.parameters(), lr=self.opts.learning_rate)
+            optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.opts.learning_rate,
+                                         weight_decay=self.opts.weight_decay)
+        elif self.opts.optimizer == 'adamw':
+            optimizer = torch.optim.AdamW(self.encoder.parameters(), lr=self.opts.learning_rate,
+                                          weight_decay=self.opts.weight_decay)
         else:
-            optimizer = Ranger(self.encoder.parameters(), lr=self.opts.learning_rate)
+            optimizer = Ranger(self.encoder.parameters(), lr=self.opts.learning_rate,
+                               weight_decay=self.opts.weight_decay)
         if checkpoint is not None:
             if 'optimizer' in checkpoint:
                 optimizer.load_state_dict(checkpoint['optimizer'])
