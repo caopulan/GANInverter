@@ -181,6 +181,8 @@ class EncoderTrainer:
         requires_grad(self.decoder, False)
         if self.opts.optimizer == 'adam':
             optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.opts.learning_rate)
+        elif self.opts.optimizer == 'adam':
+            optimizer = torch.optim.AdamW(self.encoder.parameters(), lr=self.opts.learning_rate)
         else:
             optimizer = Ranger(self.encoder.parameters(), lr=self.opts.learning_rate)
         if checkpoint is not None:
@@ -238,7 +240,7 @@ class EncoderTrainer:
 
                 # Validation related
                 val_loss_dict = None
-                if self.global_step % self.opts.val_interval == 0 or self.global_step == self.opts.max_steps:
+                if ((self.global_step % self.opts.val_interval == 0) and self.global_step != 0) or self.global_step == self.opts.max_steps:
                     val_loss_dict = self.validate()
                     if val_loss_dict and (self.best_val_loss is None or val_loss_dict['loss'] < self.best_val_loss):
                         self.best_val_loss = val_loss_dict['loss']
