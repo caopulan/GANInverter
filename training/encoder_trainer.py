@@ -179,15 +179,19 @@ class EncoderTrainer:
 
     def configure_optimizers(self, checkpoint):
         requires_grad(self.decoder, False)
+        betas = (self.opts.optim_beta1, self.opts.optim_beta2)
         if self.opts.optimizer == 'adam':
             optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.opts.learning_rate,
-                                         weight_decay=self.opts.weight_decay)
+                                         weight_decay=self.opts.weight_decay, betas=betas)
         elif self.opts.optimizer == 'adamw':
             optimizer = torch.optim.AdamW(self.encoder.parameters(), lr=self.opts.learning_rate,
-                                          weight_decay=self.opts.weight_decay)
+                                          weight_decay=self.opts.weight_decay, betas=betas)
+        elif self.opts.optimizer == 'sgd':
+            optimizer = torch.optim.SGD(self.encoder.parameters(), lr=self.opts.learning_rate,
+                                        weight_decay=self.opts.weight_decay)
         else:
             optimizer = Ranger(self.encoder.parameters(), lr=self.opts.learning_rate,
-                               weight_decay=self.opts.weight_decay)
+                               weight_decay=self.opts.weight_decay, betas=betas)
         if checkpoint is not None:
             if 'optimizer' in checkpoint:
                 optimizer.load_state_dict(checkpoint['optimizer'])
@@ -243,7 +247,8 @@ class EncoderTrainer:
 
                 # Validation related
                 val_loss_dict = None
-                if ((self.global_step % self.opts.val_interval == 0) and self.global_step != 0) or self.global_step == self.opts.max_steps:
+                if ((
+                            self.global_step % self.opts.val_interval == 0) and self.global_step != 0) or self.global_step == self.opts.max_steps:
                     val_loss_dict = self.validate()
                     if val_loss_dict and (self.best_val_loss is None or val_loss_dict['loss'] < self.best_val_loss):
                         self.best_val_loss = val_loss_dict['loss']
@@ -279,7 +284,8 @@ class EncoderTrainer:
             agg_loss_dict.append(cur_loss_dict)
 
             # Logging related
-            self.parse_and_log_images(id_logs, x, y, y_hat, title='images/test/faces', subscript='{:04d}'.format(batch_idx))
+            self.parse_and_log_images(id_logs, x, y, y_hat, title='images/test/faces',
+                                      subscript='{:04d}'.format(batch_idx))
 
             # Log images of first batch to wandb
             if self.opts.use_wandb and batch_idx == 0 and self.opts.rank == 0:

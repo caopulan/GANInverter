@@ -9,11 +9,6 @@ class TrainOptions(BaseOptions):
         super(TrainOptions, self).initialize()
 
         # 1. Basic training options
-        self.parser.add_argument('--seed', default=0, type=int, help="Random seed.")
-
-        self.parser.add_argument('--learning_rate', default=0.0001, type=float, help='Optimizer learning rate.')
-        self.parser.add_argument('--optimizer', default='ranger', type=str, help='Which optimizer to use.')
-
         self.parser.add_argument('--max_steps', default=500000, type=int, help='Maximum number of training steps.')
         self.parser.add_argument('--image_interval', default=500, type=int,
                                  help='Interval for logging train images during training.')
@@ -22,8 +17,16 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--val_interval', default=5000, type=int, help='Validation interval.')
         self.parser.add_argument('--save_interval', default=10000, type=int, help='Model checkpoint interval.')
         self.parser.add_argument('--start_step', default=0, type=int, help='Initial step.')
+        self.parser.add_argument('--seed', default=0, type=int, help="Random seed.")
 
-        # arguments for weights & biases support
+        # optimizer
+        self.parser.add_argument('--optimizer', default='ranger', type=str, help='Which optimizer to use.')
+        self.parser.add_argument('--learning_rate', default=0.0001, type=float, help='Optimizer learning rate.')
+        self.parser.add_argument('--weight_decay', default=0., type=float, help='Weight decay.')
+        self.parser.add_argument('--optim_beta1', default=0.95, type=float, help='beta1.')
+        self.parser.add_argument('--optim_beta2', default=0.999, type=float, help='beta2.')
+
+        # Wandb
         self.parser.add_argument('--use_wandb', default=False, type=str2bool,
                                  help='Whether to use Weights & Biases to track experiment.')
         self.parser.add_argument('--wandb_project', default='GAN_Inverter', type=str, help='continue to train.')
