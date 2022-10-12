@@ -28,6 +28,7 @@ class Encoder(nn.Module):
 
         # Define architecture
         self.encoder = self.set_encoder().to(device)
+        self.log_parameters()
         self.load_weights(checkpoint, latent_avg)
 
         if 'dist' in opts and opts.dist:
@@ -36,6 +37,13 @@ class Encoder(nn.Module):
             self.dist = True
         else:
             self.dist = False
+
+    def log_parameters(self):
+        parameter = 0
+        for v in list(self.encoder.parameters()):
+            parameter += v.view(-1).shape[0]
+        logger.info(f'Encoder parameters: {parameter/1e6}M.')
+        self.opts.parameters = parameter
 
     def set_encoder(self):
         if self.opts.encoder_type == 'GradualStyleEncoder':
