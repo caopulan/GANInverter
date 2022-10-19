@@ -125,7 +125,7 @@ class EncoderTrainer:
         train_batch_size = self.opts.batch_size // self.opts.gpu_num
         test_batch_size = self.opts.test_batch_size // self.opts.gpu_num
         assert self.opts.batch_size == train_batch_size * self.opts.gpu_num, 'Train batch size is not a multiple of gpu num.'
-        assert self.opts.batch_size == test_batch_size * self.opts.gpu_num, 'Test batch size is not a multiple of gpu num.'
+        assert self.opts.test_batch_size == test_batch_size * self.opts.gpu_num, 'Test batch size is not a multiple of gpu num.'
         if self.opts.dist:
             train_sampler = DistributedSampler(
                 self.train_dataset,
