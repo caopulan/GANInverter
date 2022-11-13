@@ -1,0 +1,35 @@
+exp_dir: "experiments/pti/ffhq"
+
+# Data
+train_dataset_path: './data/FFHQ'
+test_dataset_path: '/home/Database/CelebA-HQ/test'
+
+# Hyper-parameter of training
+stylegan_weights: "../pretrained_models/stylegan2-ffhq-config-f.pt"
+batch_size: 8
+workers: 8
+test_batch_size: 1
+test_workers: 8
+start_from_latent_avg: True
+
+# Loss
+lpips_lambda: 0.8
+id_lambda: 0.1
+l2_lambda: 1.0
+w_norm_lambda: 0.
+
+# pti
+embedding_mode: "encoder"
+pti_lr: 3e-4
+pti_step: 800
+pt_l2_lambda: 1.
+pt_lpips_lambda: 1.
+r_lambda: 1.
+r_l2_lambda': 0.1
+r_lpips_lambda': 0.1
+locality_regularization_interval: 100
+alpha: 30.
+
+# Wandb
+#use_wandb: True
+wandb_project: ffhq-inversion

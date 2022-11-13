@@ -1,4 +1,9 @@
 import os
+import sys
+
+sys.path.append('.')
+sys.path.append('..')
+
 
 from tqdm import tqdm
 import numpy as np
@@ -7,10 +12,9 @@ from PIL import Image
 from torch.utils.data import DataLoader
 
 from datasets.inference_dataset import InversionDataset
-from inference import OptimizerInference
+from inference import EncoderInference, OptimizerInference, PTIInference
 from utils.common import tensor2im
 from options.test_options import TestOptions
-from inference import EncoderInference
 import torchvision.transforms as transforms
 
 
@@ -23,6 +27,8 @@ def main():
         inversion = OptimizerInference(opts)
     elif opts.inverse_mode == 'encoder':
         inversion = EncoderInference(opts)
+    elif opts.inverse_mode == 'pti':
+        inversion = PTIInference(opts)
     else:
         raise Exception(f'{opts.inverese_mode} is not a valid mode. We now support "optim" and "encoder".')
 
@@ -52,10 +58,10 @@ def main():
         img = Image.open(opts.test_dataset_path)
         img = img.convert('RGB')
         img = transform(img)
-        dataloader = ([img[None], opts.test_dataset_path])
+        dataloader = [(img[None], [opts.test_dataset_path])]
 
     # with torch.no_grad():
-    for input_batch in tqdm(dataloader):
+    for input_batch in (dataloader):
         images, img_paths = input_batch
         images = images.cuda()
         inv_images, codes = inversion.inverse(images)
@@ -68,7 +74,8 @@ def main():
             if opts.output_resolution is not None and ((H, W) != opts.output_resolution):
                 inv_img = torch.nn.functional.resize(inv_img, opts.output_resolution)
             inv_result = tensor2im(inv_img)
-            Image.fromarray(np.array(inv_result)).save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
+            # Image.fromarray(np.array(inv_result)).save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
+            inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
 
 
 if __name__ == '__main__':
