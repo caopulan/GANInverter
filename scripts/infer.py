@@ -36,6 +36,7 @@ def main():
         opts.output_dir = os.path.join(opts.exp_dir, 'inference_results')
         os.makedirs(opts.output_dir, exist_ok=True)
         os.makedirs(os.path.join(opts.output_dir, 'inversion'), exist_ok=True)
+        os.makedirs(os.path.join(opts.output_dir, 'embedding'), exist_ok=True)
 
     if opts.save_code:
         os.makedirs(os.path.join(opts.output_dir, 'code'), exist_ok=True)
@@ -64,10 +65,10 @@ def main():
     for input_batch in (dataloader):
         images, img_paths = input_batch
         images = images.cuda()
-        inv_images, codes = inversion.inverse(images)
+        inv_images, codes, emb_images = inversion.inverse(images)
         H, W = inv_images.shape[2:]
 
-        for path, inv_img, code in zip(img_paths, inv_images, codes):
+        for path, inv_img, code, emb_img in zip(img_paths, inv_images, codes, emb_images):
             basename = os.path.basename(path).split('.')[0]
             if opts.save_code:
                 torch.save(code, os.path.join(opts.output_dir, 'code', f'{basename}.pt'))
@@ -76,6 +77,8 @@ def main():
             inv_result = tensor2im(inv_img)
             # Image.fromarray(np.array(inv_result)).save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
             inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
+            emb_result = tensor2im(emb_img)
+            emb_result.save(os.path.join(opts.output_dir, 'embedding', f'{basename}.jpg'))
 
 
 if __name__ == '__main__':

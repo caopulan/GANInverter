@@ -1,6 +1,7 @@
 from tqdm import tqdm
 
 from criteria.lpips.lpips import LPIPS
+from utils.common import tensor2im
 from .inference import BaseInference
 from .encoder_infer import EncoderInference
 from .optim_infer import OptimizerInference
@@ -28,11 +29,10 @@ class PTIInference(BaseInference):
             self.embedding_module = OptimizerInference(opts)
 
         # initial loss
-        self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
+        self.lpips_loss = LPIPS(net_type='alex').to(self.device).eval()
 
     def inverse(self, x):
-        with torch.no_grad():
-            _, embedding_latent = self.embedding_module.inverse(x)
+        embedding_images, embedding_latent = self.embedding_module.inverse(x)
 
         # resume from checkpoint
         checkpoint = load_train_checkpoint(self.opts)
@@ -87,6 +87,7 @@ class PTIInference(BaseInference):
                 loss += self.opts.r_lambda * r_loss
 
             optimizer.zero_grad()
+
             loss.backward()
             optimizer.step()
 
@@ -98,4 +99,4 @@ class PTIInference(BaseInference):
 
         images, result_latent = decoder([embedding_latent], input_is_latent=True, return_latents=True)
 
-        return images, result_latent
+        return images, result_latent, embedding_images

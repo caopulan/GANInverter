@@ -2,9 +2,10 @@ exp_dir: "experiments/pti/ffhq"
 
 # Data
 train_dataset_path: './data/FFHQ'
-test_dataset_path: '/home/Database/CelebA-HQ/test'
+test_dataset_path: '/home/Database/CelebA-HQ/test/182660.jpg'
 
 # Hyper-parameter of training
+checkpoint_path: "../pretrained_models/e4e_ffhq_encode.pt"
 stylegan_weights: "../pretrained_models/stylegan2-ffhq-config-f.pt"
 batch_size: 8
 workers: 8
@@ -21,13 +22,13 @@ w_norm_lambda: 0.
 # pti
 embedding_mode: "encoder"
 pti_lr: 3e-4
-pti_step: 800
+pti_step: 350
 pt_l2_lambda: 1.
 pt_lpips_lambda: 1.
 r_lambda: 1.
 r_l2_lambda': 0.1
 r_lpips_lambda': 0.1
-locality_regularization_interval: 100
+locality_regularization_interval: 50
 alpha: 30.
 
 # Wandb
