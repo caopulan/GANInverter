@@ -12,7 +12,7 @@ from PIL import Image
 from torch.utils.data import DataLoader
 
 from datasets.inference_dataset import InversionDataset
-from inference import EncoderInference, OptimizerInference, PTIInference
+from inference import TwoStageInference
 from utils.common import tensor2im
 from options.test_options import TestOptions
 import torchvision.transforms as transforms
@@ -23,14 +23,7 @@ def main():
     if opts.checkpoint_path is None:
         opts.auto_resume = True
 
-    if opts.inverse_mode == 'optim':
-        inversion = OptimizerInference(opts)
-    elif opts.inverse_mode == 'encoder':
-        inversion = EncoderInference(opts)
-    elif opts.inverse_mode == 'pti':
-        inversion = PTIInference(opts)
-    else:
-        raise Exception(f'{opts.inverese_mode} is not a valid mode. We now support "optim" and "encoder".')
+    inversion = TwoStageInference(opts)
 
     if opts.output_dir is None:
         opts.output_dir = os.path.join(opts.exp_dir, 'inference_results')
@@ -71,20 +64,22 @@ def main():
     for input_batch in (dataloader):
         images_resize, img_paths, images = input_batch
         images_resize, images = images_resize.cuda(), images.cuda()
-        inv_images, codes, emb_images = inversion.inverse(images, images_resize, img_paths)
-        H, W = inv_images.shape[2:]
+        emb_codes, emb_images, refine_codes, refine_images = inversion.inverse(images, images_resize, img_paths)
 
-        for path, inv_img, code, emb_img in zip(img_paths, inv_images, codes, emb_images):
+        H, W = emb_images.shape[2:]
+        if refine_images is not None:
+            images, codes = refine_images, refine_codes
+        else:
+            images, codes = emb_images, emb_codes
+
+        for path, inv_img, code in zip(img_paths, images, codes):
             basename = os.path.basename(path).split('.')[0]
             if opts.save_code:
                 torch.save(code, os.path.join(opts.output_dir, 'code', f'{basename}.pt'))
             if opts.output_resolution is not None and ((H, W) != opts.output_resolution):
                 inv_img = torch.nn.functional.resize(inv_img, opts.output_resolution)
             inv_result = tensor2im(inv_img)
-            # Image.fromarray(np.array(inv_result)).save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
             inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
-            emb_result = tensor2im(emb_img)
-            emb_result.save(os.path.join(opts.output_dir, 'embedding', f'{basename}.jpg'))
 
 
 if __name__ == '__main__':

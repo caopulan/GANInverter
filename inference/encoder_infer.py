@@ -1,4 +1,3 @@
-from .inference import BaseInference
 import math
 from models.encoder import Encoder
 from models.stylegan2.model import Generator
@@ -6,7 +5,7 @@ import torch
 from utils.train_utils import load_train_checkpoint
 
 
-class EncoderInference(BaseInference):
+class EncoderInference:
 
     def __init__(self, opts):
         super(EncoderInference, self).__init__()

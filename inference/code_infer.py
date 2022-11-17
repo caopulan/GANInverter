@@ -1,4 +1,3 @@
-from .inference import BaseInference
 import math
 import os
 from models.encoder import Encoder
@@ -7,7 +6,7 @@ import torch
 from utils.train_utils import load_train_checkpoint
 
 
-class CodeInference(BaseInference):
+class CodeInference:
 
     def __init__(self, opts):
         super(CodeInference, self).__init__()
@@ -28,12 +27,12 @@ class CodeInference(BaseInference):
             decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
             self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
-    def inverse(self, x, image_name):
+    def inverse(self, images, images_resize, image_name):
         codes = []
         for path in image_name:
             code_path = os.path.join(self.code_path, f'{os.path.basename(path[:-4])}.pt')
             codes.append(torch.load(code_path, map_location='cpu'))
-        codes = torch.stack(codes, dim=0).to(x.device)
+        codes = torch.stack(codes, dim=0).to(images.device)
         with torch.no_grad():
             images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
         return images, result_latent

@@ -2,7 +2,6 @@ from tqdm import tqdm
 
 from criteria.lpips.lpips import LPIPS
 from utils.common import tensor2im
-from .inference import BaseInference
 from .encoder_infer import EncoderInference
 from .optim_infer import OptimizerInference
 from .code_infer import CodeInference
@@ -14,7 +13,7 @@ import torch.nn.functional as F
 from utils.train_utils import load_train_checkpoint, requires_grad
 
 
-class PTIInference(BaseInference):
+class PTIInference:
 
     def __init__(self, opts):
         super(PTIInference, self).__init__()
@@ -23,20 +22,10 @@ class PTIInference(BaseInference):
         self.opts.device = self.device
         self.opts.n_styles = int(math.log(opts.resolution, 2)) * 2 - 2
 
-        # initialize embedding
-        if opts.embedding_mode == 'encoder':
-            self.embedding_module = EncoderInference(opts)
-        elif opts.embedding_mode == 'optim':
-            self.embedding_module = OptimizerInference(opts)
-        elif opts.embedding_mode == 'code':
-            self.embedding_module = CodeInference(opts)
-
         # initial loss
         self.lpips_loss = LPIPS(net_type='alex').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_name):
-        embedding_images, embedding_latent = self.embedding_module.inverse(images_resize, image_name)
-
+    def inverse(self, images, images_resize, image_name, emb_codes, emb_images):
         # resume from checkpoint
         checkpoint = load_train_checkpoint(self.opts)
 
@@ -62,7 +51,7 @@ class PTIInference(BaseInference):
 
         pbar = tqdm(range(self.opts.pti_step))
         for i in pbar:
-            gen_images, _ = decoder([embedding_latent], input_is_latent=True, randomize_noise=False)
+            gen_images, _ = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
 
             # calculate loss
             loss_lpips = self.lpips_loss(gen_images, images)
@@ -98,6 +87,6 @@ class PTIInference(BaseInference):
                 )
             )
 
-        images, result_latent = decoder([embedding_latent], input_is_latent=True, randomize_noise=False)
+        images, result_latent = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
 
-        return images, result_latent, embedding_images
+        return images, emb_codes

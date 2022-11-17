@@ -3,7 +3,6 @@ import os
 from tqdm import tqdm
 
 from criteria.lpips.lpips import LPIPS
-from .inference import BaseInference
 import math
 from models.stylegan2.model import Generator
 import torch
@@ -57,7 +56,7 @@ def noise_normalize_(noises):
         noise.data.add_(-mean).div_(std)
 
 
-class OptimizerInference(BaseInference):
+class OptimizerInference:
 
     def __init__(self, opts):
         super(OptimizerInference, self).__init__()
@@ -84,7 +83,7 @@ class OptimizerInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_path):
+    def inverse(self, images, images_resize, image_name, emb_codes, emb_images):
         if self.latent_std is None:
             n_mean_latent = 10000
             with torch.no_grad():
