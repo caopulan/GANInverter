@@ -6,7 +6,7 @@ class TestOptions(BaseOptions):
 		super(TestOptions, self).initialize()
 
 		# arguments for inference script
-		self.parser.add_argument('--inverse_mode', default='pti', type=str, help='Which mode to inverse. "encoder" for encoder-based and "optim" for optimization-based.')
+		self.parser.add_argument('--inverse_mode', default='optim', type=str, help='Which mode to inverse. "encoder" for encoder-based and "optim" for optimization-based.')
 		self.parser.add_argument('--output_resolution', default=None, nargs="+", help="Output resolution.")
 		self.parser.add_argument('--output_dir', default=None, type=str, help="Output path.")
 		self.parser.add_argument('--save_code', default=False, type=str2bool, help="Whether to save latent code.")

@@ -2,11 +2,11 @@ exp_dir: "experiments/pti/ffhq"
 
 # Data
 train_dataset_path: './data/FFHQ'
-test_dataset_path: '/home/Database/CelebA-HQ/test/182660.jpg'
+test_dataset_path: './data/CelebA-HQ/test'
 
 # Hyper-parameter of training
-checkpoint_path: "../pretrained_models/e4e_ffhq_encode.pt"
-stylegan_weights: "../pretrained_models/stylegan2-ffhq-config-f.pt"
+checkpoint_path: "./pretrained_models/e4e_ffhq_encode.pt"
+stylegan_weights: "./pretrained_models/stylegan2-ffhq-config-f.pt"
 batch_size: 8
 workers: 8
 test_batch_size: 1
@@ -30,7 +30,3 @@ r_l2_lambda': 0.1
 r_lpips_lambda': 0.1
 locality_regularization_interval: 50
 alpha: 30.
-
-# Wandb
-#use_wandb: True
-wandb_project: ffhq-inversion
