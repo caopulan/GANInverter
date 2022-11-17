@@ -31,12 +31,13 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--pti_step', default=800, type=int, help='tune epoches')
 		self.parser.add_argument('--pti_l2_lambda', default=1., type=float, help='weight of mse loss in pt')
 		self.parser.add_argument('--pti_lpips_lambda', default=1., type=float, help='weight of lpips loss in pt')
-		self.parser.add_argument('--r_lambda', default=1., type=float, help='weight of locality regularization')
-		self.parser.add_argument('--r_l2_lambda', default=0.1, type=float, help='weight of mse loss in locality regularization')
-		self.parser.add_argument('--r_lpips_lambda', default=0.1, type=float, help='weight of lpips loss in locality regularization')
+		self.parser.add_argument('--pti_regulizer_lambda', default=1., type=float, help='weight of locality regularization')
+		self.parser.add_argument('--pti_regulizer_l2_lambda', default=0.1, type=float, help='weight of mse loss in locality regularization')
+		self.parser.add_argument('--pti_regulizer_lpips_lambda', default=0.1, type=float, help='weight of lpips loss in locality regularization')
 		self.parser.add_argument('--pti_use_regularization', default=False, type=str2bool, help='Whether to use locality regularization.')
-		self.parser.add_argument('--locality_regularization_interval', default=100, type=int, help='interval of locality regularization')
-		self.parser.add_argument('--alpha', default=30, type=float, help='weight of interpolation between embedding and samples')
+		self.parser.add_argument('--pti_locality_regularization_interval', default=100, type=int, help='interval of locality regularization')
+		self.parser.add_argument('--pti_regulizer_alpha', default=30, type=float, help='weight of interpolation between embedding and samples')
+		self.parser.add_argument('--pti_latent_ball_num_of_samples', default=1, type=int)
 
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')
