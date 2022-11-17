@@ -34,8 +34,8 @@ class PTIInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='alex').to(self.device).eval()
 
-    def inverse(self, x, image_name):
-        embedding_images, embedding_latent = self.embedding_module.inverse(x, image_name)
+    def inverse(self, images, images_resize, image_name):
+        embedding_images, embedding_latent = self.embedding_module.inverse(images_resize, image_name)
 
         # resume from checkpoint
         checkpoint = load_train_checkpoint(self.opts)
@@ -62,16 +62,15 @@ class PTIInference(BaseInference):
 
         pbar = tqdm(range(self.opts.pti_step))
         for i in pbar:
-            images, result_latent = decoder([embedding_latent], input_is_latent=True, return_latents=True)
-            images = F.interpolate(torch.clamp(images, -1., 1.), size=(x.shape[2], x.shape[3]), mode='bilinear')
+            gen_images, _ = decoder([embedding_latent], input_is_latent=True, randomize_noise=False)
 
-            pt_p_loss = self.lpips_loss(images, x)
-            pt_mse_loss = F.mse_loss(images, x)
-            pt_loss = self.opts.pt_lpips_lambda * pt_p_loss + self.opts.pt_l2_lambda * pt_mse_loss
-            loss = pt_loss
+            # calculate loss
+            loss_lpips = self.lpips_loss(gen_images, images)
+            loss_mse = F.mse_loss(gen_images, images)
+            loss = self.opts.pti_lpips_lambda * loss_lpips + self.opts.pti_l2_lambda * loss_mse
 
-            if i % self.opts.locality_regularization_interval == 0:
-                w_samples = decoder_r.w_sample(x.shape[0])
+            if self.opts.pti_use_regularization and i % self.opts.locality_regularization_interval == 0:
+                w_samples = decoder_r.w_sample(images.shape[0])
                 if embedding_latent.ndim < 3:
                     direction = w_samples - embedding_latent
                     direction_n = direction / torch.norm(direction, p=2, dim=-1, keepdim=True).repeat(1, decoder_r.style_dim)
@@ -84,13 +83,12 @@ class PTIInference(BaseInference):
                     images_r, _ = decoder_r([regularization_latent], input_is_latent=True, return_latents=True)
                     images_r = F.interpolate(torch.clamp(images_r, -1., 1.), size=(x.shape[2], x.shape[3]), mode='bilinear')
 
-                r_p_loss = self.lpips_loss(images, images_r)
-                r_mse_loss = F.mse_loss(images, images_r)
+                r_p_loss = self.lpips_loss(gen_images, images_r)
+                r_mse_loss = F.mse_loss(gen_images, images_r)
                 r_loss = self.opts.r_lpips_lambda * r_p_loss + self.opts.r_l2_lambda * r_mse_loss
                 loss += self.opts.r_lambda * r_loss
 
             optimizer.zero_grad()
-
             loss.backward()
             optimizer.step()
 
@@ -100,6 +98,6 @@ class PTIInference(BaseInference):
                 )
             )
 
-        images, result_latent = decoder([embedding_latent], input_is_latent=True, return_latents=True)
+        images, result_latent = decoder([embedding_latent], input_is_latent=True, randomize_noise=False)
 
         return images, result_latent, embedding_images

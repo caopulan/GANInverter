@@ -23,8 +23,8 @@ w_norm_lambda: 0.
 embedding_mode: "encoder"
 pti_lr: 3e-4
 pti_step: 350
-pt_l2_lambda: 1.
-pt_lpips_lambda: 1.
+pti_l2_lambda: 1.
+pti_lpips_lambda: 1.
 r_lambda: 1.
 r_l2_lambda': 0.1
 r_lpips_lambda': 0.1
