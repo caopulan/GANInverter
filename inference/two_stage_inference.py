@@ -29,7 +29,7 @@ class TwoStageInference:
             raise Exception(f'Wrong embedding mode: {embedding_mode}.')
 
     def inverse(self, images, images_resize, images_path):
-        emb_images, emb_codes  = self.embedding_module.inverse(images, images_resize, images_path)
+        emb_images, emb_codes = self.embedding_module.inverse(images, images_resize, images_path)
         if self.refinement_mode is not None:
             refine_images, refine_codes = self.refinement_module.inverse(images, images_resize, images_path,
                                                                          emb_codes, emb_images)

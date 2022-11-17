@@ -16,7 +16,7 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--mode', default='inversion', type=str, help='which task to inference')
 
 		# arguments for optimization-based inversion
-		self.parser.add_argument('--w_plus', action='store_true', help='w or w plus')
+		self.parser.add_argument('--w_plus', default=True, type=str2bool, help='w or w plus')
 		self.parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 		self.parser.add_argument('--optim_step', default=1000, type=int, help='optimize iterations')
 		self.parser.add_argument('--noise', default=0.05, type=float, help='strength of the noise level')
