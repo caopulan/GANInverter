@@ -27,8 +27,18 @@ We collect SOTA inversion methods and construct a uniform pipeline with more fea
     -  [x] Weight & bias (wandb).
     -  [x] Automatically resume training.
 
+We will release v2.0 around early 2023:
+-  [ ] Documentation.
+-  [ ] More inversion methods, including E2Style, Hyperstyle, SAM, HFGI.
+-  [ ] Evaluation System.
+-  [ ] More editing methods.
+-  [ ] Make inversion easy to integrate in GAN-based downstream tasks.
+
 ## Recent Updates
-**`2022.10`**: GAN Inverter v1.0 is released. 
+
+**`2022.11`**: Add more optimizers and PTI is supported now.
+
+**`2022.10`**: GAN Inverter v1.0 is released. Support methods: pSp, e4e, LSAP.
 
 **`2022.09`**: LSAP is published on [arxiv](https://arxiv.org/abs/2209.12746).
 
@@ -57,7 +67,7 @@ Note: ```E```/```O``` means encoder-based and optimization-based methods.
 |   :white_medium_square:   |    HyperStyle    | [code](https://github.com/yuval-alaluf/hyperstyle) | [paper](https://arxiv.org/abs/2111.15666)  | CVPR2022 |        |
 |   :white_medium_square:   |       HFGI       |    [code](https://github.com/Tengfei-Wang/HFGI)    | [paper](https://arxiv.org/pdf/2109.06590)  | CVPR2022 |        |
 |   :white_medium_square:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |        |
-|   :white_medium_square:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |        |
+|   :ballot_box_with_check:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |        |
 |   :white_medium_square:   | Near Perfect GAN Inversion | - | [paper](https://arxiv.org/abs/2202.11833) |  Arxiv   |        |
 
 ### 3. Editing Methods
