@@ -5,6 +5,7 @@ from utils.common import tensor2im
 from .inference import BaseInference
 from .encoder_infer import EncoderInference
 from .optim_infer import OptimizerInference
+from .code_infer import CodeInference
 import math
 from models.stylegan2.model import Generator
 import torch
@@ -27,12 +28,14 @@ class PTIInference(BaseInference):
             self.embedding_module = EncoderInference(opts)
         elif opts.embedding_mode == 'optim':
             self.embedding_module = OptimizerInference(opts)
+        elif opts.embedding_mode == 'code':
+            self.embedding_module = CodeInference(opts)
 
         # initial loss
         self.lpips_loss = LPIPS(net_type='alex').to(self.device).eval()
 
-    def inverse(self, x):
-        embedding_images, embedding_latent = self.embedding_module.inverse(x)
+    def inverse(self, x, image_name):
+        embedding_images, embedding_latent = self.embedding_module.inverse(x, image_name)
 
         # resume from checkpoint
         checkpoint = load_train_checkpoint(self.opts)

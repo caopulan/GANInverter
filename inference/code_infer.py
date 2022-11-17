@@ -1,25 +1,25 @@
 from .inference import BaseInference
 import math
+import os
 from models.encoder import Encoder
 from models.stylegan2.model import Generator
 import torch
 from utils.train_utils import load_train_checkpoint
 
 
-class EncoderInference(BaseInference):
+class CodeInference(BaseInference):
 
     def __init__(self, opts):
-        super(EncoderInference, self).__init__()
+        super(CodeInference, self).__init__()
         self.opts = opts
         self.device = 'cuda'
         self.opts.device = self.device
         self.opts.n_styles = int(math.log(opts.resolution, 2)) * 2 - 2
-
+        self.code_path = opts.code_path
         # resume from checkpoint
         checkpoint = load_train_checkpoint(opts)
 
-        # initialize encoder and decoder
-        latent_avg = None
+        # initialize and decoder
         self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
         self.decoder.train()
         if checkpoint is not None:
@@ -27,14 +27,13 @@ class EncoderInference(BaseInference):
         else:
             decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
             self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
-            latent_avg = decoder_checkpoint['latent_avg']
-        if latent_avg is None:
-            latent_avg = self.decoder.mean_latent(int(1e5))[0].detach() if checkpoint is None else None
-        self.encoder = Encoder(opts, checkpoint, latent_avg, device=self.device).to(self.device)
-        self.encoder.set_progressive_stage(self.opts.n_styles)
 
-    def inverse(self, images, images_resize, image_path):
+    def inverse(self, x, image_name):
+        codes = []
+        for path in image_name:
+            code_path = os.path.join(self.code_path, f'{os.path.basename(path[:-4])}.pt')
+            codes.append(torch.load(code_path, map_location='cpu'))
+        codes = torch.stack(codes, dim=0).to(x.device)
         with torch.no_grad():
-            codes = self.encoder(images_resize)
             images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
         return images, result_latent

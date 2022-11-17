@@ -84,7 +84,7 @@ class OptimizerInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, x):
+    def inverse(self, images, images_resize, image_path):
         if self.latent_std is None:
             n_mean_latent = 10000
             with torch.no_grad():
@@ -101,9 +101,9 @@ class OptimizerInference(BaseInference):
         noises_single = self.decoder.make_noise()
         noises = []
         for noise in noises_single:
-            noises.append(noise.repeat(x.shape[0], 1, 1, 1).normal_())
+            noises.append(noise.repeat(images_resize.shape[0], 1, 1, 1).normal_())
 
-        latent_in = latent_mean.unsqueeze(0).repeat(x.shape[0], 1)
+        latent_in = latent_mean.unsqueeze(0).repeat(images_resize.shape[0], 1)
 
         if self.opts.w_plus:
             latent_in = latent_in.unsqueeze(1).repeat(1, self.decoder.n_latent, 1)
@@ -123,11 +123,11 @@ class OptimizerInference(BaseInference):
             latent_n = latent_noise(latent_in, noise_strength.item())
 
             img_gen, _ = self.decoder([latent_n], input_is_latent=True, noise=noises)
-            img_gen = F.interpolate(torch.clamp(img_gen, -1., 1.), size=(x.shape[2], x.shape[3]), mode='bilinear')
+            img_gen = F.interpolate(torch.clamp(img_gen, -1., 1.), size=(images_resize.shape[2], images_resize.shape[3]), mode='bilinear')
 
-            p_loss = self.lpips_loss(img_gen, x)
+            p_loss = self.lpips_loss(img_gen, images_resize)
             n_loss = noise_regularize(noises)
-            mse_loss = F.mse_loss(img_gen, x)
+            mse_loss = F.mse_loss(img_gen, images_resize)
             loss = self.opts.optim_lpips_lambda * p_loss + self.opts.noise_regularize * n_loss + \
                    self.opts.optim_l2_lambda * mse_loss
 

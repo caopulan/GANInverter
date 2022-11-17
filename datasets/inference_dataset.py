@@ -8,9 +8,10 @@ import os
 
 class InversionDataset(Dataset):
 
-	def __init__(self, root, transform=None):
+	def __init__(self, root, transform=None, transform_no_resize=None):
 		self.paths = sorted(data_utils.make_dataset(root))
 		self.transform = transform
+		self.transform_no_resize = transform_no_resize
 
 	def __len__(self):
 		return len(self.paths)
@@ -20,8 +21,14 @@ class InversionDataset(Dataset):
 		from_im = Image.open(from_path)
 		from_im = from_im.convert('RGB')
 		if self.transform:
-			from_im = self.transform(from_im)
-		return from_im, from_path
+			from_im_aug = self.transform(from_im)
+		else:
+			from_im_aug = from_im
+		if self.transform_no_resize is not None:
+			from_im_no_resize_aug = self.transform_no_resize(from_im)
+			return from_im_aug, from_path, from_im_no_resize_aug
+		else:
+			return from_im_aug, from_path
 
 
 class InversionCodeDataset(Dataset):

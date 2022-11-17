@@ -10,7 +10,7 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--output_resolution', default=None, nargs="+", help="Output resolution.")
 		self.parser.add_argument('--output_dir', default=None, type=str, help="Output path.")
 		self.parser.add_argument('--save_code', default=False, type=str2bool, help="Whether to save latent code.")
-
+		self.parser.add_argument('--code_path', default=None, type=str)
 		self.parser.add_argument('--mode', default='inversion', type=str, help='which task to inference')
 
 		# arguments for optimization-based inversion

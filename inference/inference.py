@@ -2,7 +2,7 @@ class BaseInference(object):
     def __init__(self):
         self.decoder = None
 
-    def inverse(self, x):
+    def inverse(self, images, images_resize, image_name):
         pass
 
     def generate(self, codes):

@@ -48,8 +48,13 @@ def main():
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    transform_no_resize = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+
     if os.path.isdir(opts.test_dataset_path):
-        dataset = InversionDataset(root=opts.test_dataset_path, transform=transform)
+        dataset = InversionDataset(root=opts.test_dataset_path, transform=transform,
+                                   transform_no_resize=transform_no_resize)
         dataloader = DataLoader(dataset,
                                 batch_size=opts.test_batch_size,
                                 shuffle=False,
@@ -58,14 +63,15 @@ def main():
     else:
         img = Image.open(opts.test_dataset_path)
         img = img.convert('RGB')
-        img = transform(img)
-        dataloader = [(img[None], [opts.test_dataset_path])]
+        img_aug = transform(img)
+        img_aug_no_resize = transform_no_resize(img)
+        dataloader = [(img_aug[None], [opts.test_dataset_path], img_aug_no_resize[None])]
 
     # with torch.no_grad():
     for input_batch in (dataloader):
-        images, img_paths = input_batch
-        images = images.cuda()
-        inv_images, codes, emb_images = inversion.inverse(images)
+        images_resize, img_paths, images = input_batch
+        images_resize, images = images_resize.cuda(), images.cuda()
+        inv_images, codes, emb_images = inversion.inverse(images, images_resize, img_paths)
         H, W = inv_images.shape[2:]
 
         for path, inv_img, code, emb_img in zip(img_paths, inv_images, codes, emb_images):
