@@ -1,4 +1,7 @@
 import os
+import sys
+sys.path.append('.')
+sys.path.append('..')
 
 from tqdm import tqdm
 import numpy as np
@@ -70,7 +73,7 @@ def main():
         else:
             images, paths = input_batch
             images = images.cuda()
-            inv_images, codes = inversion.inverse(images)
+            inv_images, codes = inversion.inverse(images, images, None)
 
         edit_codes = codes + edit_vector[None] * factor
         with torch.no_grad():

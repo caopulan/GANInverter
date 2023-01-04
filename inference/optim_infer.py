@@ -9,6 +9,7 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from utils.train_utils import load_train_checkpoint, requires_grad
+from inference.inference import BaseInference
 
 
 def get_lr(t, initial_lr, rampdown=0.25, rampup=0.05):
@@ -56,7 +57,7 @@ def noise_normalize_(noises):
         noise.data.add_(-mean).div_(std)
 
 
-class OptimizerInference:
+class OptimizerInference(BaseInference):
 
     def __init__(self, opts):
         super(OptimizerInference, self).__init__()
