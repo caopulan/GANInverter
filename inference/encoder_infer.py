@@ -3,9 +3,10 @@ from models.encoder import Encoder
 from models.stylegan2.model import Generator
 import torch
 from utils.train_utils import load_train_checkpoint
+from inference.inference import BaseInference
 
 
-class EncoderInference:
+class EncoderInference(BaseInference):
 
     def __init__(self, opts):
         super(EncoderInference, self).__init__()

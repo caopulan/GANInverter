@@ -16,6 +16,8 @@ from options.test_options import TestOptions
 from inference import EncoderInference
 import torchvision.transforms as transforms
 
+import time
+
 
 def main():
     opts = TestOptions().parse()
@@ -27,6 +29,13 @@ def main():
         edit_vector = torch.load(opts.edit_path, map_location='cpu').cuda()
         factor = opts.edit_factor
         save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{factor}'
+    elif opts.edit_mode == 'ganspace':
+        ganspace_pca = torch.load(opts.edit_path, map_location='cpu')
+        pca_idx, start, end, strength = opts.ganspace_directions
+        code_mean = ganspace_pca['mean'].cuda()
+        code_comp = ganspace_pca['comp'].cuda()[pca_idx]
+        code_std = ganspace_pca['std'].cuda()[pca_idx]
+        save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{pca_idx}_{start}_{end}_{strength}'
 
     if opts.inverse_mode == 'optim' or opts.inverse_mode == 'code':
         inversion = OptimizerInference(opts)
@@ -75,7 +84,21 @@ def main():
             images = images.cuda()
             inv_images, codes = inversion.inverse(images, images, None)
 
-        edit_codes = codes + edit_vector[None] * factor
+        if opts.edit_mode == 'interfacegan':
+            edit_codes = codes + edit_vector[None] * factor
+        elif opts.edit_mode == 'ganspace':
+            edit_codes = []
+            for code in codes:
+                w_centered = code - code_mean
+                w_coord = torch.sum(w_centered[0].reshape(-1) * code_comp.reshape(-1)) / code_std
+                # print(f'w_coord: {w_coord}\ncode_std: {code_std}\n{(strength - w_coord)*code_std}')
+                # time.sleep(0.1)
+                delta = (strength - w_coord) * code_comp * code_std
+                delta_padded = torch.zeros(code.shape).to('cuda')
+                delta_padded[start:end] += delta.repeat(end - start, 1)
+                edit_codes.append(code + delta_padded)
+            edit_codes = torch.stack(edit_codes)
+
         with torch.no_grad():
             edit_images = inversion.generate(edit_codes)
 
