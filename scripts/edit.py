@@ -16,8 +16,6 @@ from options.test_options import TestOptions
 from inference import EncoderInference
 import torchvision.transforms as transforms
 
-import time
-
 
 def main():
     opts = TestOptions().parse()
@@ -91,8 +89,6 @@ def main():
             for code in codes:
                 w_centered = code - code_mean
                 w_coord = torch.sum(w_centered[0].reshape(-1) * code_comp.reshape(-1)) / code_std
-                # print(f'w_coord: {w_coord}\ncode_std: {code_std}\n{(strength - w_coord)*code_std}')
-                # time.sleep(0.1)
                 delta = (strength - w_coord) * code_comp * code_std
                 delta_padded = torch.zeros(code.shape).to('cuda')
                 delta_padded[start:end] += delta.repeat(end - start, 1)
