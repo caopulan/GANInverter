@@ -2,7 +2,7 @@ exp_dir: "experiments/lsap/ffhq_lsap_r50"
 
 # Data
 train_dataset_path: './data/FFHQ'
-test_dataset_path: './data/CelebA-HQ/test'
+test_dataset_path: '/share/dataset/CelebA-HQ/test/'
 
 # Hyper-parameter of training
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"

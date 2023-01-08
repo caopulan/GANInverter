@@ -2,9 +2,10 @@ exp_dir: "experiments/e4e/ffhq_e4e_r50"
 
 # Data
 train_dataset_path: './data/FFHQ'
-test_dataset_path: './data/CelebA-HQ/test'
+test_dataset_path: '/share/dataset/CelebA-HQ/test/'
 
 # Hyper-parameter of training
+checkpoint_path: "pretrained_models/e4e_ffhq_encode.pt"
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
 batch_size: 8
 workers: 8

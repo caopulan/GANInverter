@@ -3,6 +3,7 @@ from .encoder_infer import EncoderInference
 from .optim_infer import OptimizerInference
 from .pti_infer import PTIInference
 
+
 class TwoStageInference:
     def __init__(self, opts):
         # mode in two stages
