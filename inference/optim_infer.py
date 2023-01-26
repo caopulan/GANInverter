@@ -59,7 +59,7 @@ def noise_normalize_(noises):
 
 class OptimizerInference(BaseInference):
 
-    def __init__(self, opts):
+    def __init__(self, opts, decoder=None):
         super(OptimizerInference, self).__init__()
         self.opts = opts
         self.device = 'cuda'
@@ -71,14 +71,17 @@ class OptimizerInference(BaseInference):
 
         # initialize encoder and decoder
         self.latent_avg = None
-        self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
-        self.decoder.eval()
-        if checkpoint is not None:
-            self.decoder.load_state_dict(checkpoint['decoder'], strict=True)
+        if decoder is not None:
+            self.decoder = decoder
         else:
-            decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
-            self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
-            self.latent_avg = decoder_checkpoint['latent_avg'].to(self.device) if checkpoint is None else None
+            self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
+            self.decoder.eval()
+            if checkpoint is not None:
+                self.decoder.load_state_dict(checkpoint['decoder'], strict=True)
+            else:
+                decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
+                self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
+                self.latent_avg = decoder_checkpoint['latent_avg'].to(self.device) if checkpoint is None else None
         self.latent_std = None
 
         # initial loss

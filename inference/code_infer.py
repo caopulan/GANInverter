@@ -8,7 +8,7 @@ from utils.train_utils import load_train_checkpoint
 
 class CodeInference:
 
-    def __init__(self, opts):
+    def __init__(self, opts, decoder=None):
         super(CodeInference, self).__init__()
         self.opts = opts
         self.device = 'cuda'
@@ -19,13 +19,16 @@ class CodeInference:
         checkpoint = load_train_checkpoint(opts)
 
         # initialize and decoder
-        self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
-        self.decoder.train()
-        if checkpoint is not None:
-            self.decoder.load_state_dict(checkpoint['decoder'], strict=True)
+        if decoder is not None:
+            self.decoder = decoder
         else:
-            decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
-            self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
+            self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
+            self.decoder.train()
+            if checkpoint is not None:
+                self.decoder.load_state_dict(checkpoint['decoder'], strict=True)
+            else:
+                decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
+                self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
     def inverse(self, images, images_resize, image_name):
         codes = []

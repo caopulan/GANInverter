@@ -6,12 +6,13 @@ class TestOptions(BaseOptions):
 		super(TestOptions, self).initialize()
 
 		# arguments for inference script
-		self.parser.add_argument('--inverse_mode', default='optim', type=str, help='Which mode to embed image. "encoder" for encoder-based and "optim" for optimization-based.')
+		self.parser.add_argument('--embed_mode', default='optim', type=str, help='Which mode to embed image. "encoder" for encoder-based and "optim" for optimization-based.')
 		self.parser.add_argument('--refinement_mode', default=None, type=str, help='Refinement mode. Support PTI.')
 
 		self.parser.add_argument('--output_resolution', default=None, nargs="+", help="Output resolution.")
 		self.parser.add_argument('--output_dir', default=None, type=str, help="Output path.")
 		self.parser.add_argument('--save_code', default=False, type=str2bool, help="Whether to save latent code.")
+		self.parser.add_argument('--save_intermediate', default=False, type=str2bool, help="Whether to save latent code.")
 		self.parser.add_argument('--code_path', default=None, type=str)
 		self.parser.add_argument('--mode', default='inversion', type=str, help='which task to inference')
 
@@ -26,7 +27,6 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--optim_lpips_lambda', default=1., type=float, help='weight of lpips loss')
 
 		# arguments for PTI inversion
-		self.parser.add_argument('--embedding_mode', default='encoder', type=str, help='Which mode to embedding. "encoder" for encoder-based and "optim" for optimization-based.')
 		self.parser.add_argument('--pti_lr', default=3e-4, type=float, help='learning rate')
 		self.parser.add_argument('--pti_step', default=800, type=int, help='tune epoches')
 		self.parser.add_argument('--pti_l2_lambda', default=1., type=float, help='weight of mse loss in pt')

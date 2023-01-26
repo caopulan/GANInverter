@@ -81,7 +81,7 @@ class PTIInference:
         if opts.pti_use_regularization:
             self.space_regulizer = Space_Regulizer(opts, origin_decoder, self.lpips_loss)
 
-    def inverse(self, images, images_resize, image_name, emb_codes, emb_images):
+    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_intermediate):
         # initialize decoder and regularization decoder
         decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
         decoder.train()
@@ -103,6 +103,7 @@ class PTIInference:
             loss_mse = F.mse_loss(gen_images, images)
             loss = self.opts.pti_lpips_lambda * loss_lpips + self.opts.pti_l2_lambda * loss_mse
 
+            # TODO: use regularization may cause some erros
             if self.opts.pti_use_regularization and i % self.opts.pti_locality_regularization_interval == 0:
                 ball_holder_loss_val = self.space_regulizer.space_regulizer_loss(decoder, emb_codes)
                 loss += self.opts.pti_regulizer_lambda * ball_holder_loss_val
@@ -119,4 +120,5 @@ class PTIInference:
 
         images, result_latent = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
 
-        return images, emb_codes
+        pti_info = {'generator': decoder.state_dict()}
+        return images, emb_codes, pti_info

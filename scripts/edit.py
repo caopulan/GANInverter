@@ -35,9 +35,9 @@ def main():
         code_std = ganspace_pca['std'].cuda()[pca_idx]
         save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{pca_idx}_{start}_{end}_{strength}'
 
-    if opts.inverse_mode == 'optim' or opts.inverse_mode == 'code':
+    if opts.embed_mode == 'optim' or opts.embed_mode == 'code':
         inversion = OptimizerInference(opts)
-    elif opts.inverse_mode == 'encoder':
+    elif opts.embed_mode == 'encoder':
         inversion = EncoderInference(opts)
     else:
         raise Exception(f'{opts.inverese_mode} is not a valid mode. We now support "optim", "encoder", "code".')
@@ -55,7 +55,7 @@ def main():
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
     if os.path.isdir(opts.test_dataset_path):
-        if opts.inverse_mode == 'code':
+        if opts.embed_mode == 'code':
             dataset = InversionCodeDataset(root=opts.test_dataset_path)
         else:
             dataset = InversionDataset(root=opts.test_dataset_path, transform=transform)
@@ -65,7 +65,7 @@ def main():
                                 num_workers=int(opts.test_workers),
                                 drop_last=False)
     else:
-        if opts.inverse_mode == 'code':
+        if opts.embed_mode == 'code':
             dataloader = (torch.load(opts.test_dataset_path, map_location='cpu')[None], opts.test_dataset_path)
         else:
             img = Image.open(opts.test_dataset_path)
@@ -74,7 +74,7 @@ def main():
             dataloader = ([img[None], opts.test_dataset_path])
 
     for input_batch in tqdm(dataloader):
-        if opts.inverse_mode == 'code':
+        if opts.embed_mode == 'code':
             codes, paths = input_batch
             codes = codes.cuda()
         else:
