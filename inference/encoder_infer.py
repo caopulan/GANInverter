@@ -36,8 +36,12 @@ class EncoderInference(BaseInference):
         self.encoder = Encoder(opts, checkpoint, latent_avg, device=self.device).to(self.device)
         self.encoder.set_progressive_stage(self.opts.n_styles)
 
-    def inverse(self, images, images_resize, image_path):
+    def inverse(self, images, images_resize, image_path, **kwargs):
         with torch.no_grad():
             codes = self.encoder(images_resize)
             images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
         return images, result_latent
+
+    def edit(self, images, images_resize, image_path, editor):
+        _, codes = self.inverse(images, images_resize, image_path)
+        return self.generate(editor.edit_code(codes))

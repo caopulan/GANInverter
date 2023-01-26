@@ -209,12 +209,12 @@ python scripts/infer.py -c configs/e4e/e4e_ffhq_r50.yaml --embed_mode encoder --
 We have three ``embed_mode`` in editing: ```encoder```, ```optim```, and ```code```.
 #### (1) Edit with encoder or optimization
 ```bash
-python scripts/edit.py -c configs/lsap/lsap_ffhq_r50.yaml --edit_mode interfacegan --edit_path editings/interfacegan_directions/age.pt --edit_factor 1.0
+python scripts/edit.py -c configs/lsap/lsap_ffhq_r50.yaml --edit_mode interfacegan --edit_path editing/interfacegan_directions/age.pt --edit_factor 1.0
 ```
 #### (2) Edit with inverse codes
 If you have inferred images first and saved the latent codes, you can edit these latent codes without inversion. We recommend "inference->edit" pipeline since editing with various attributes and factors will not cost extra inversion time.
 ```bash
-python scripts/edit.py -c configs/optim/optim_celeba-hq.yaml --embed_mode code --test_dataset_path /path/to/latent/codes/ --edit_mode interfacegan --edit_path editings/interfacegan_directions/age.pt --edit_factor 1.0
+python scripts/edit.py -c configs/optim/optim_celeba-hq.yaml --embed_mode code --test_dataset_path /path/to/latent/codes/ --edit_mode interfacegan --edit_path editing/interfacegan_directions/age.pt --edit_factor 1.0
 ```
 
 ### Evaluation

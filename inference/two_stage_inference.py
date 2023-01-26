@@ -14,7 +14,7 @@ class BaseInference(object):
     def generate(self, codes, **kwargs):
         return self.decoder([codes], input_is_latent=True, return_latents=False)[0]
 
-    def edit(self, codes, edit_info, **kwargs):
+    def edit(self, **kwargs):
         pass
 
 
@@ -40,16 +40,28 @@ class TwoStageInference(BaseInference):
         if refinement_mode == 'pti':
             self.refinement_module = PTIInference(opts)
         elif refinement_mode is None:
-            pass
+            self.refinement_module = None
         else:
             raise Exception(f'Wrong embedding mode: {embedding_mode}.')
 
     def inverse(self, images, images_resize, image_paths, **kwargs):
-        emb_images, emb_codes, emb_intermediate = self.embedding_module.inverse(images, images_resize, image_paths)
+        emb_images, emb_codes, emb_info = self.embedding_module.inverse(images, images_resize, image_paths)
         if self.refinement_mode is not None:
-            refine_images, refine_codes, refine_intermediate = \
-                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_intermediate)
+            refine_images, refine_codes, refine_info = \
+                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
+        else:
+            refine_codes, refine_images, refine_info = None, None, None
+
+        return emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info
+
+    def edit(self, images, images_resize, image_paths, editor):
+        if self.refinement_mode is None:
+            emb_images, emb_codes, emb_info = self.embedding_module.edit(images, images_resize, image_paths, editor)
+            edit_codes = editor.edit_code(emb_codes)
+        if self.refinement_mode is not None:
+            refine_images, refine_codes, refine_info = \
+                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
         else:
             refine_codes, refine_images, refine_intermediate = None, None, None
 
-        return emb_codes, emb_images, emb_intermediate, refine_codes, refine_images, refine_intermediate
+        return emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info
