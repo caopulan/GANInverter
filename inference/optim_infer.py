@@ -87,7 +87,7 @@ class OptimizerInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_name):
+    def inverse(self, images, images_resize, image_name, **kwargs):
         if self.latent_std is None:
             n_mean_latent = 10000
             with torch.no_grad():
@@ -150,4 +150,10 @@ class OptimizerInference(BaseInference):
         images, result_latent = self.decoder([latent_in.detach().clone()], input_is_latent=True, noise=noises,
                                              return_latents=True)
 
-        return images, result_latent
+        return images, result_latent, None
+    
+    def edit(self, images, images_resize, emb_codes, emb_images, image_path, editor):
+        images, codes, _ = self.inverse(images, images_resize, image_path)
+        edit_codes = editor.edit_code(codes)
+        edit_images = self.generate(edit_codes)
+        return images, edit_images, codes, edit_codes, None

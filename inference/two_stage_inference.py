@@ -50,18 +50,18 @@ class TwoStageInference(BaseInference):
             refine_images, refine_codes, refine_info = \
                 self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
         else:
-            refine_codes, refine_images, refine_info = None, None, None
+            refine_images, refine_codes, refine_info = None, None, None
 
-        return emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info
+        return emb_images, emb_codes, emb_info, refine_images, refine_codes, refine_info
 
     def edit(self, images, images_resize, image_paths, editor):
-        if self.refinement_mode is None:
-            emb_images, emb_codes, emb_info = self.embedding_module.edit(images, images_resize, image_paths, editor)
-            edit_codes = editor.edit_code(emb_codes)
+        emb_codes, emb_codes_edit, emb_images, emb_images_edit, emb_info, \
+        refine_codes, refine_codes_edit, refine_images, refine_images_edit, refine_info = [None] * 10
+        emb_images, emb_images_edit, emb_codes, emb_codes_edit, emb_info = \
+            self.embedding_module.edit(images, images_resize, image_paths, editor)
         if self.refinement_mode is not None:
-            refine_images, refine_codes, refine_info = \
-                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
-        else:
-            refine_codes, refine_images, refine_intermediate = None, None, None
+            refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info = \
+                    self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
 
-        return emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info
+        return emb_images, emb_images_edit, emb_codes, emb_codes_edit, emb_info, \
+               refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info

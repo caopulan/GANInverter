@@ -44,7 +44,5 @@ class TestOptions(BaseOptions):
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')
 		self.parser.add_argument('--edit_factor', type=float, default=1.0, help='the weight of interfacegan direction')
-		self.parser.add_argument('--edit_path', type=str, default='', help='the path about edit')
+		self.parser.add_argument('--edit_path', type=str, default='', help='the path about edit file (e.g., edit direction in InterFaceGAN and pca in GANSpace')
 		self.parser.add_argument('--ganspace_directions', nargs='+', type=int, default=[54, 7, 8, 20], help='about ganspace: pca_idx, start, end, strength')
-		self.parser.add_argument('--indices', default='all', help='about sefa: which layers of stylegan to pca')
-		self.parser.add_argument('--sem_id', type=int, default=0, help='about sefa: which semantic to be direction')

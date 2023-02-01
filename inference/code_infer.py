@@ -1,12 +1,12 @@
 import math
 import os
-from models.encoder import Encoder
 from models.stylegan2.model import Generator
 import torch
 from utils.train_utils import load_train_checkpoint
+from.two_stage_inference import BaseInference
 
 
-class CodeInference:
+class CodeInference(BaseInference):
 
     def __init__(self, opts, decoder=None):
         super(CodeInference, self).__init__()
@@ -30,7 +30,7 @@ class CodeInference:
                 decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
                 self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
-    def inverse(self, images, images_resize, image_name):
+    def inverse(self, images, images_resize, image_name, **kwargs):
         codes = []
         for path in image_name:
             code_path = os.path.join(self.code_path, f'{os.path.basename(path[:-4])}.pt')
@@ -38,4 +38,10 @@ class CodeInference:
         codes = torch.stack(codes, dim=0).to(images.device)
         with torch.no_grad():
             images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
-        return images, result_latent
+        return images, result_latent, None
+
+    def edit(self, images, images_resize, image_paths, editor):
+        images, codes, _ = self.inverse(images, images_resize, image_paths)
+        edit_codes = editor.edit_code(codes)
+        edit_images = self.generate(edit_codes)
+        return images, edit_images, codes, edit_codes, None

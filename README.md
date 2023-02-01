@@ -35,8 +35,7 @@ We will release v2.0 around early 2023:
 -  [ ] Make inversion easy to integrate in GAN-based downstream tasks.
 
 ## Recent Updates
-
-**`2023.01`**: V1.1. Re-organized codes: methods' class, inference pipeline. 
+**`2023.02`**: V1.1. Re-organized codes: methods' class, inference pipeline. 
 
 **`2022.11`**: Add more optimizers and PTI is supported now.
 
@@ -81,7 +80,7 @@ Note: ```E```/```O``` means encoder-based and optimization-based methods.
 |      |    Method    |                       Repo                       |                   Paper                   |   Source    | Weight |
 | :--: | :----------: | :----------------------------------------------: | :---------------------------------------: | :---------: | :----: |
 |  :ballot_box_with_check:    | InterFaceGAN | [code](https://github.com/genforce/interfacegan) | [paper](https://arxiv.org/pdf/1907.10786) |  CVPR2020   |   -    |
-|  :white_medium_square:    |   GANSpace   |   [code](https://github.com/harskish/ganspace)   | [paper](https://arxiv.org/abs/2004.02546) | NeurIPS2020 |   -    |
+|  :ballot_box_with_check:    |   GANSpace   |   [code](https://github.com/harskish/ganspace)   | [paper](https://arxiv.org/abs/2004.02546) | NeurIPS2020 |   -    |
 |   :white_medium_square:   |  StyleClip   | [code](https://github.com/orpatashnik/StyleCLIP) | [paper](https://arxiv.org/abs/2103.17249) |  ICCV2021   |   -    |
 
 ## Unified Pipeline

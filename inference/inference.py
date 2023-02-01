@@ -8,5 +8,5 @@ class BaseInference(object):
     def generate(self, codes):
         return self.decoder([codes], input_is_latent=True, return_latents=False)[0]
 
-    def edit(self):
+    def edit(self, images, images_resize, emb_codes, emb_images, image_path, editor):
         pass
