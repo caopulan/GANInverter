@@ -26,10 +26,14 @@ class LPIPS(nn.Module):
         self.lin = LinLayers(self.net.n_channels_list)#.to("cuda")
         self.lin.load_state_dict(get_state_dict(net_type, version))
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor):
+    def forward(self, x: torch.Tensor, y: torch.Tensor, keep_res=False):
         feat_x, feat_y = self.net(x), self.net(y)
 
         diff = [(fx - fy) ** 2 for fx, fy in zip(feat_x, feat_y)]
-        res = [l(d).mean((2, 3), True) for d, l in zip(diff, self.lin)]
 
-        return torch.sum(torch.cat(res, 0)) / x.shape[0]
+        if keep_res:
+            res = [l(d) for d, l in zip(diff, self.lin)]
+            return res
+        else:
+            res = [l(d).mean((2, 3), True) for d, l in zip(diff, self.lin)]
+            return torch.sum(torch.cat(res, 0)) / x.shape[0]

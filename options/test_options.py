@@ -41,6 +41,15 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--pti_regulizer_alpha', default=30, type=float, help='weight of interpolation between embedding and samples')
 		self.parser.add_argument('--pti_latent_ball_num_of_samples', default=1, type=int)
 
+		# arguments for DHR inversion
+		self.parser.add_argument('--dhr_feature_idx', default=11, type=int, help='')
+		self.parser.add_argument('--dhr_weight_lr', default=1.5e-3, type=float, help='')
+		self.parser.add_argument('--dhr_feature_lr', default=9e-2, type=float, help='')
+		self.parser.add_argument('--dhr_weight_step', default=100, type=int, help='')
+		self.parser.add_argument('--dhr_feature_step', default=350, type=int, help='')
+		self.parser.add_argument('--dhr_l2_lambda', default=1., type=float, help='weight of mse loss in dhr')
+		self.parser.add_argument('--dhr_lpips_lambda', default=1., type=float, help='weight of lpips loss in dhr')
+
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')
 		self.parser.add_argument('--edit_factor', type=float, default=1.0, help='the weight of interfacegan direction')
