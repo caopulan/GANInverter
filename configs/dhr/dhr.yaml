@@ -13,3 +13,5 @@ dhr_weight_step: 50
 dhr_feature_step: 100
 dhr_l2_lambda: 1.
 dhr_lpips_lambda: 1.
+dhr_theta1: 0.7
+dhr_theta2: 0.8

@@ -119,8 +119,7 @@ class OptimizerInference(BaseInference):
 
         optimizer = optim.Adam([latent_in] + noises, lr=self.opts.lr)
 
-        pbar = tqdm(range(self.opts.optim_step))
-        for i in pbar:
+        for i in range(self.opts.optim_step):
             t = i / self.opts.optim_step
             lr = get_lr(t, self.opts.lr)
             optimizer.param_groups[0]["lr"] = lr
@@ -145,13 +144,6 @@ class OptimizerInference(BaseInference):
             optimizer.step()
 
             noise_normalize_(noises)
-
-            pbar.set_description(
-                (
-                    f"perceptual: {p_loss.item():.4f}; noise regularize: {n_loss.item():.4f};"
-                    f" mse: {mse_loss.item():.4f}; lr: {lr:.4f}"
-                )
-            )
 
         images, result_latent = self.decoder([latent_in.detach().clone()], input_is_latent=True, noise=noises,
                                              return_latents=True)

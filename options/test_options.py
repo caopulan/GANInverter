@@ -49,6 +49,8 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--dhr_feature_step', default=100, type=int, help='')
 		self.parser.add_argument('--dhr_l2_lambda', default=1., type=float, help='weight of mse loss in dhr')
 		self.parser.add_argument('--dhr_lpips_lambda', default=1., type=float, help='weight of lpips loss in dhr')
+		self.parser.add_argument('--dhr_theta1', default=0.7, type=float, help='theta1 for domain-specific segmentation')
+		self.parser.add_argument('--dhr_theta2', default=0.8, type=float, help='theta2 for domain-specific segmentation')
 
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')

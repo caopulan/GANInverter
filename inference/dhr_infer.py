@@ -51,11 +51,9 @@ class DHRInference(BaseInference):
     def inverse(self, images, images_resize, image_name, emb_codes, emb_images, mask_result):
         refine_info = dict()
 
-        # coarse inversion
-        coarse_image, _, delta = self.coarse_inv.inverse(images, images_resize, image_name, return_lpips=True)
-        refine_info['coarse_inv'] = coarse_image
-
         # initialize decoder and regularization decoder
+        feature_idx = self.opts.dhr_feature_idx  # 11
+        res = [4, 4, 8, 8, 16, 16, 32, 32, 64, 64, 128, 128, 256, 256, 512, 512, 1024, 1024][feature_idx]
         decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
         decoder.train()
         if self.checkpoint is not None:
@@ -64,34 +62,34 @@ class DHRInference(BaseInference):
             decoder_checkpoint = torch.load(self.opts.stylegan_weights, map_location='cpu')
             decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
-        # initialize modulated feature and optimizer
-        feature_idx = self.opts.dhr_feature_idx  # 11
-        res = [4, 4, 8, 8, 16, 16, 32, 32, 64, 64, 128, 128, 256, 256, 512, 512, 1024, 1024][feature_idx]
-        with torch.no_grad():
-            gen_images, _, offset = decoder([emb_codes], feature_idx=feature_idx, mask=None, input_is_latent=True,
-                                            randomize_noise=False, return_featuremap=True)
-        offset = torch.nn.Parameter(offset.detach()).cuda()
-        optimizer_f = optim.Adam([offset], lr=self.opts.dhr_feature_lr)
-        optimizer = optim.Adam(decoder.parameters(), lr=self.opts.dhr_weight_lr)
-
         # domain-specific segmentation
-        bg_score = 0.6
-        fg_score = 0.7
-        top_score = 0.8
+        bg_score = 0.6  # no use
+        fg_score = self.opts.dhr_theta1
+        top_score = self.opts.dhr_theta2
         score_thr = [bg_score, bg_score, fg_score, bg_score] + [top_score] * 10 + [bg_score, bg_score, bg_score,
                                                                                    bg_score, bg_score]
-        # load segmentation if exist
+
+        # Domain-Specific Segmentation
         if False and os.path.exists(f'{self.opts.output_dir}/mask_refine_pt/{os.path.basename(image_name[0])[:-4]}.pt'):
+            # load segmentation if exist
             m = torch.load(f'{self.opts.output_dir}/mask_refine_pt/{os.path.basename(image_name[0])[:-4]}.pt')
             m = m.cuda()
         else:
+            # coarse inversion
+            coarse_image, _, delta = self.coarse_inv.inverse(images, images_resize, image_name, return_lpips=True)
+            refine_info['coarse_inv'] = coarse_image
+
+            # face parsing
             parsing_result = self.parsing(images)
             mask_bg = parsing_result[[0, 3, -1, -2, -3]].sum(dim=0)
             mask_parsing = (mask_bg < 0.5).float()
             mask_parsing = mask_parsing[None, None]
 
-            # Genearte superpixel result
+            # Superpixel
+            import time
+            start_time = time.time()
             superpixel = slic(cv2.imread(image_name[0]), n_segments=200, compactness=30, sigma=1)
+            print(time.time() - start_time)
             mask_sp = torch.zeros((self.opts.resolution, self.opts.resolution))
             for sp_i in range(1, 1 + int(superpixel.max())):
                 ds = []
@@ -114,18 +112,25 @@ class DHRInference(BaseInference):
         mask = torch.nn.AdaptiveAvgPool2d((res, res))(m)
         mask_ori = m.clone()
 
-        pbar = tqdm(range(self.opts.dhr_feature_step))
-
-        # load weight and feature if exist.
-        if os.path.exists(
+        # Hybrid Refinement Modulation
+        if False and os.path.exists(
                 f'{self.opts.output_dir}/weight/{os.path.basename(image_name[0])[:-4]}.pt') and os.path.exists(
                 f'{self.opts.output_dir}/feature/{os.path.basename(image_name[0])[:-4]}.pt'):
+            # load weight and feature if exist.
             weight = torch.load(f'{self.opts.output_dir}/weight/{os.path.basename(image_name[0])[:-4]}.pt',
                                 map_location='cpu')
             decoder.load_state_dict(weight)
             offset = torch.load(f'{self.opts.output_dir}/feature/{os.path.basename(image_name[0])[:-4]}.pt')
         else:
-            for i in pbar:
+            # initialize modulated feature and optimizer
+            with torch.no_grad():
+                gen_images, _, offset = decoder([emb_codes], feature_idx=feature_idx, mask=None, input_is_latent=True,
+                                                randomize_noise=False, return_featuremap=True)
+            offset = torch.nn.Parameter(offset.detach()).cuda()
+            optimizer_f = optim.Adam([offset], lr=self.opts.dhr_feature_lr)
+            optimizer = optim.Adam(decoder.parameters(), lr=self.opts.dhr_weight_lr)
+
+            for i in range(self.opts.dhr_feature_step):
                 gen_images, _ = decoder([emb_codes], feature_idx=feature_idx, offset=offset, mask=mask,
                                         input_is_latent=True, randomize_noise=False)
 
@@ -160,12 +165,6 @@ class DHRInference(BaseInference):
                     optimizer.zero_grad()
                     loss_face.backward()
                     optimizer.step()
-
-                pbar.set_description(
-                    (
-                        f"loss: {loss.item():.4f}; mse: {loss_mse.item():.4f}"
-                    )
-                )
 
             refine_info['weight'] = decoder.state_dict()
             refine_info['feature'] = offset.clone()
