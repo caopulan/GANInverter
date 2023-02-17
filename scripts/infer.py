@@ -4,12 +4,12 @@ import sys
 sys.path.append('.')
 sys.path.append('..')
 
+import cv2
 import tqdm
 import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import DataLoader
-
 from datasets.inference_dataset import InversionDataset
 from inference import TwoStageInference
 from utils.common import tensor2im
@@ -27,11 +27,11 @@ def save_intermediate(info_dict, output_dir, basename, keys):
         if isinstance(v, torch.Tensor):
             # image tensor
             if v.dim() == 4 and v.shape[0] == 1 and v.shape[1] == 3:
-                img = tensor2im(img[0])
-                img.save(os.path.join(output_dir, 'inversion', f'{basename}.jpg'))
+                img = tensor2im(v[0])
+                img.save(os.path.join(output_dir, k, f'{basename}.jpg'))
             elif v.dim() == 3 and v.shape[0] == 3:
-                img = tensor2im(img)
-                img.save(os.path.join(output_dir, 'inversion', f'{basename}.jpg'))
+                img = tensor2im(v)
+                img.save(os.path.join(output_dir, k, f'{basename}.jpg'))
             else:  # tensor but not image
                 torch.save(v, os.path.join(output_dir, k, f'{basename}.pt'))
         # model weight
@@ -39,9 +39,12 @@ def save_intermediate(info_dict, output_dir, basename, keys):
             torch.save(v, os.path.join(output_dir, k, f'{basename}.pt'))
         # numpy array
         elif isinstance(v, np.ndarray):
-            np.save(v, os.path.join(output_dir, k, f'{basename}.npy'))
+            if v.dtype == np.uint8:
+                cv2.imwrite(os.path.join(output_dir, k, f'{basename}.jpg'), v)
+            else:
+                np.save(os.path.join(output_dir, k, f'{basename}.npy'), v)
         else:
-            pass
+            raise Exception('Intermediate information can not be saved:', k)
 
 
 def main():

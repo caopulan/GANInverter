@@ -506,6 +506,7 @@ class Generator(nn.Module):
     def forward(
             self,
             styles,
+            mask=None,
             return_latents=False,
             return_features=False,
             return_multi_feature=False,
@@ -515,7 +516,11 @@ class Generator(nn.Module):
             input_is_latent=False,
             noise=None,
             randomize_noise=True,
+            return_featuremap=False,
+            offset=None,
+            feature_idx=None,
     ):
+        featuremap = None
         if not input_is_latent:
             styles = [self.style(s) for s in styles]    # z -> w
 
@@ -564,7 +569,26 @@ class Generator(nn.Module):
         for conv1, conv2, noise1, noise2, to_rgb in zip(
                 self.convs[::2], self.convs[1::2], noise[1::2], noise[2::2], self.to_rgbs
         ):
+            if feature_idx is not None and i == feature_idx:
+                if return_featuremap:
+                    featuremap = out
+                if offset is not None:
+                    if mask is not None:
+                        # out = out + offset * (1-mask)
+                        out = out * mask + offset * (1-mask)
+                    else:
+                        out = out + offset
             out = conv1(out, latent[:, i], noise=noise1)
+
+            if feature_idx is not None and i+1 == feature_idx:
+                if return_featuremap:
+                    featuremap = out
+                if offset is not None:
+                    if mask is not None:
+                        out = out * mask + offset * (1-mask)
+                        # out = out + offset * (1-mask)
+                    else:
+                        out = out + offset
             out = conv2(out, latent[:, i + 1], noise=noise2)
             skip = to_rgb(out, latent[:, i + 2], skip)
 
@@ -573,11 +597,21 @@ class Generator(nn.Module):
         image = skip
 
         if return_latents:
-            return image, latent
+            if return_featuremap:
+                return image, latent, featuremap
+            else:
+                return image, latent
         elif return_features:
-            return image, out
+            if return_featuremap:
+                return image, out, featuremap
+            else:
+                return image, out
+
         else:
-            return image, None
+            if return_featuremap:
+                return image, None, featuremap
+            else:
+                return image, None
 
 
 class ConvLayer(nn.Sequential):

@@ -45,8 +45,8 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--dhr_feature_idx', default=11, type=int, help='')
 		self.parser.add_argument('--dhr_weight_lr', default=1.5e-3, type=float, help='')
 		self.parser.add_argument('--dhr_feature_lr', default=9e-2, type=float, help='')
-		self.parser.add_argument('--dhr_weight_step', default=100, type=int, help='')
-		self.parser.add_argument('--dhr_feature_step', default=350, type=int, help='')
+		self.parser.add_argument('--dhr_weight_step', default=50, type=int, help='')
+		self.parser.add_argument('--dhr_feature_step', default=100, type=int, help='')
 		self.parser.add_argument('--dhr_l2_lambda', default=1., type=float, help='weight of mse loss in dhr')
 		self.parser.add_argument('--dhr_lpips_lambda', default=1., type=float, help='weight of lpips loss in dhr')
 

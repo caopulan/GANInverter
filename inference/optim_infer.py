@@ -10,6 +10,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 from utils.train_utils import load_train_checkpoint, requires_grad
 from inference.inference import BaseInference
+import cv2
+import numpy as np
 
 
 def get_lr(t, initial_lr, rampdown=0.25, rampup=0.05):
@@ -87,7 +89,7 @@ class OptimizerInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_name, **kwargs):
+    def inverse(self, images, images_resize, image_name, return_lpips=False, **kwargs):
         if self.latent_std is None:
             n_mean_latent = 10000
             with torch.no_grad():
@@ -126,6 +128,10 @@ class OptimizerInference(BaseInference):
             latent_n = latent_noise(latent_in, noise_strength.item())
 
             img_gen, _ = self.decoder([latent_n], input_is_latent=True, noise=noises)
+
+            if i == (self.opts.optim_step - 1) and return_lpips:
+                delta = self.lpips_loss(img_gen, images, keep_res=True)
+
             img_gen = F.interpolate(torch.clamp(img_gen, -1., 1.), size=(images_resize.shape[2], images_resize.shape[3]), mode='bilinear')
 
             p_loss = self.lpips_loss(img_gen, images_resize)
@@ -150,8 +156,11 @@ class OptimizerInference(BaseInference):
         images, result_latent = self.decoder([latent_in.detach().clone()], input_is_latent=True, noise=noises,
                                              return_latents=True)
 
-        return images, result_latent, None
-    
+        if return_lpips:
+            return images, result_latent, delta
+        else:
+            return images, result_latent, None
+
     def edit(self, images, images_resize, emb_codes, emb_images, image_path, editor):
         images, codes, _ = self.inverse(images, images_resize, image_path)
         edit_codes = editor.edit_code(codes)

@@ -1,0 +1,8 @@
+torch
+pillow
+numpy
+ipywidgets
+scikit-image
+matplotlib
+validators
+colorsys
