@@ -8,6 +8,7 @@ We collect SOTA inversion methods and construct a uniform pipeline with more fea
   * [Features](#features)
   * [Recent Updates](#recent-updates)
   * [Model Zoo](#model-zoo)
+  * [Benchmark](#benchmark)
   * [Unified Pipeline](#unified-pipeline)
   * [Installation](#installation)
   * [Getting Start](#getting-start)
@@ -35,7 +36,10 @@ We will release v2.0 around early 2023:
 -  [ ] Make inversion easy to integrate in GAN-based downstream tasks.
 
 ## Recent Updates
-**`2023.02`**: V1.1. Re-organized codes: methods' class, inference pipeline. 
+
+**We are working for supporting more methods' inference and conducting the benchmark.**
+
+**`2023.02`**: V1.1. Re-organized codes: methods' class, inference pipeline. Add our new work DHR ["What Decreases Editing Capability? Domain-Specific Hybrid Refinement for Improved GAN Inversion"](https://arxiv.org/abs/2301.12141).
 
 **`2022.11`**: Add more optimizers and PTI is supported now.
 
@@ -44,22 +48,22 @@ We will release v2.0 around early 2023:
 **`2022.09`**: LSAP is published on [arxiv](https://arxiv.org/abs/2209.12746).
 
 ## Model Zoo
-Although previous works use encoder-based, optimization-based and hybrid method to categorize inversion methods, this set of division criteria is no longer appropriate at present.
-According to the purpose of method, we divide inversion process into two steps: **Image Embedding** and **Result Refinement**:
+Although previous works use "encoder-based", "optimization-based" and "hybrid method" to categorize inversion methods, this set of division criteria is no longer appropriate at present.
+According to the purpose of methods, we divide the inversion process into two steps: **Image Embedding** and **Result Refinement**:
 
-- **Image Embedding** aims to embed image into latent code by encoder or optimization.
+- **Image Embedding** aims to embed images into latent code by encoder or optimization.
 - **Result Refinement** aims to refine the initial inversion and editing results from the first step by various strategies (e.g., adjusting generator weight or intermediate feature).
 ### 1. Image Embedding Methods
-|      |      Method       |      |                           Repo                           |                            Paper                             |    Source    |
+|      |      Method       | Type |                           Repo                           |                            Paper                             |    Source    |
 | :--: | :---------------: | :--: | :------------------------------------------------------: | :----------------------------------------------------------: | :----------: |
 |   :ballot_box_with_check:   |        pSp        |  E   |  [code](https://github.com/eladrich/pixel2style2pixel)   |          [paper](https://arxiv.org/abs/2008.00951)           |   CVPR2021   |
 |   :ballot_box_with_check:   |        e4e        |  E   |    [code](https://github.com/omertov/encoder4editing)    |          [paper](https://arxiv.org/abs/2102.02766)           | SIGGRAPH2021 |
-|   :ballot_box_with_check:   |       LSAP        |  E   |                                                          |       [paper](https://arxiv.org/abs/2209.12746)                                                       |    Arxiv     |
+|   :ballot_box_with_check:   |       LSAP        |  E   | [code](https://github.com/caopulan/GANInverter) |       [paper](https://arxiv.org/abs/2209.12746)                                                       |    Arxiv2022    |
 |   :white_medium_square:   |      E2Style      |  E   |       [code](https://github.com/wty-ustc/e2style)        | [paper](https://wty-ustc.github.io/inversion/paper/E2Style.pdf) |   TIP2022    |
 |   :white_medium_square:   | Style Transformer |  E   | [code](https://github.com/sapphire497/style-transformer) |          [paper](https://arxiv.org/abs/2203.07932)           |   CVPR2022   |
 |   :ballot_box_with_check:   | StyleGAN2(LPIPS)  |  O   | [code](https://github.com/rosinality/stylegan2-pytorch)  |           [paper](http://arxiv.org/abs/1912.04958)           |   CVPR2020   |
 
-Note: ```E```/```O``` means encoder-based and optimization-based methods.
+Note: ```E```/```O```/```H``` means encoder-based and optimization-based methods.
 
 ### 2. Result Refinement Methods
 
@@ -70,52 +74,71 @@ Note: ```E```/```O``` means encoder-based and optimization-based methods.
 |   :white_medium_square:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
 |   :ballot_box_with_check:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |
 |   :white_medium_square:   | Near Perfect GAN Inversion | - | [paper](https://arxiv.org/abs/2202.11833) |  Arxiv   |
-|   :white_medium_square:   | FeatureStyleEncoder | [code](https://github.com/InterDigitalInc/FeatureStyleEncoder) | [paper](https://link.springer.com/chapter/10.1007/978-3-031-19784-0_34) |  ECCV22   |
-| :ballot_box_with_check: | DHR | [code]([caopulan/GANInverter: A GAN inversion toolbox based on PyTorch library. (github.com)](https://github.com/caopulan/Domain-Specific_Hybrid_Refinement_Inversion)) | - | Arxiv |
+|   :white_medium_square:   | FeatureStyleEncoder | [code](https://github.com/InterDigitalInc/FeatureStyleEncoder) | [paper](https://link.springer.com/chapter/10.1007/978-3-031-19784-0_34) |  ECCV2022  |
+| :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code]([caopulan/GANInverter: A GAN inversion toolbox based on PyTorch library. (github.com)](https://github.com/caopulan/Domain-Specific_Hybrid_Refinement_Inversion)) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
 
 ### 3. Editing Methods
 
-|      |    Method    |                       Repo                       |                   Paper                   |   Source    | Weight |
-| :--: | :----------: | :----------------------------------------------: | :---------------------------------------: | :---------: | :----: |
-|  :ballot_box_with_check:    | InterFaceGAN | [code](https://github.com/genforce/interfacegan) | [paper](https://arxiv.org/pdf/1907.10786) |  CVPR2020   |   -    |
-|  :ballot_box_with_check:    |   GANSpace   |   [code](https://github.com/harskish/ganspace)   | [paper](https://arxiv.org/abs/2004.02546) | NeurIPS2020 |   -    |
-|   :white_medium_square:   |  StyleClip   | [code](https://github.com/orpatashnik/StyleCLIP) | [paper](https://arxiv.org/abs/2103.17249) |  ICCV2021   |   -    |
+|      |    Method    |                       Repo                       |                   Paper                   |   Source    |
+| :--: | :----------: | :----------------------------------------------: | :---------------------------------------: | :---------: |
+|  :ballot_box_with_check:    | InterFaceGAN | [code](https://github.com/genforce/interfacegan) | [paper](https://arxiv.org/pdf/1907.10786) |  CVPR2020   |
+|  :ballot_box_with_check:    |   GANSpace   |   [code](https://github.com/harskish/ganspace)   | [paper](https://arxiv.org/abs/2004.02546) | NeurIPS2020 |
+|   :white_medium_square:   |  StyleClip   | [code](https://github.com/orpatashnik/StyleCLIP) | [paper](https://arxiv.org/abs/2103.17249) |  ICCV2021   |
 
-## Benchmark
+## Benchmark 
 
-Based on the unified pipeline, we conduct a benchmark on face domain (CelebA-HQ test set).
+#### **Evaluating...... results will be reported soon**
 
-### 1. Encoder-Only
+As evaluation settings are different in previous inversion works, we conduct a benchmark to better evaluate inversion methods based on our unified pipeline. See [Evaluation](#evaluation) for more details.
 
-|      Method       |                           Repo                           |                            Paper                             |    Source    |
-| :---------------: | :------------------------------------------------------: | :----------------------------------------------------------: | :----------: |
-|        pSp        |  [code](https://github.com/eladrich/pixel2style2pixel)   |          [paper](https://arxiv.org/abs/2008.00951)           |   CVPR2021   |
-|        e4e        |    [code](https://github.com/omertov/encoder4editing)    |          [paper](https://arxiv.org/abs/2102.02766)           | SIGGRAPH2021 |
-|       LSAP        |                                                          |          [paper](https://arxiv.org/abs/2209.12746)           |    Arxiv     |
-|      E2Style      |       [code](https://github.com/wty-ustc/e2style)        | [paper](https://wty-ustc.github.io/inversion/paper/E2Style.pdf) |   TIP2022    |
-| Style Transformer | [code](https://github.com/sapphire497/style-transformer) |          [paper](https://arxiv.org/abs/2203.07932)           |   CVPR2022   |
-| StyleGAN2(LPIPS)  | [code](https://github.com/rosinality/stylegan2-pytorch)  |           [paper](http://arxiv.org/abs/1912.04958)           |   CVPR2020   |
+**Evaluation Settings:**
 
+- Dataset: CelebA-HQ test split (2,824) images;
 
+- Face recognition model: xxxx;
+- LPIPS version: VGG;
+- Images are generated and converted to uint8 except for FID, which is evaluated on saved images (png format).
+
+| Refinement |    Embedding    | PSNR | MSE  | LPIPS |  ID  | FID  |
+| :--------: | :-------------: | :--: | :--: | :---: | :--: | :--: |
+|     -      | Optimization-W  |  -   |  -   |   -   |  -   |  -   |
+|     -      | Optimization-W+ |  -   |  -   |   -   |  -   |  -   |
+|     -      |       pSp       |  -   |  -   |   -   |  -   |  -   |
+|     -      |       e4e       |  -   |  -   |   -   |  -   |  -   |
+|     -      |      LSAP       |  -   |  -   |   -   |  -   |  -   |
+|    PTI     |     pivot_w     |  -   |  -   |   -   |  -   |  -   |
+|    PTI     |       e4e       |  -   |  -   |   -   |  -   |  -   |
+|    HFGI    |       e4e       |  -   |  -   |   -   |  -   |  -   |
+|    SAM     |       e4e       |  -   |  -   |   -   |  -   |  -   |
+|    SAM     |      LSAP       |  -   |  -   |   -   |  -   |  -   |
+|    DHR     |       e4e       |  -   |  -   |   -   |  -   |  -   |
+|    DHR     |      LSAP       |  -   |  -   |   -   |  -   |  -   |
+
+**Note:** The results may be inconsistent with the reported results in our paper because the reported results are calculated by saved JPEG images.
 
 ## Unified Pipeline
+
+### Configs
+
+We conduct a unified config system in train/inference/test/edit. All options are saved in the config file, which can be conveniently determined for any use. 
+
+We define all options in ```options```.  And ```options/base_options.py``` contains communal options in every phase. 
 
 ### Two-Stage Inference Pipeline
 
 <img src="./docs/inference_pipeline.png" alt="inference_pipeline" style="zoom: 15%;" />
 
-We follow two-stage inference in this repository. The base inference class `TwoStageInference` is defined in ```./inference/two_stage_inference.py```. It follows two steps:
+We follow two-stage inference in this repository. The base inference class `TwoStageInference` is defined in ```./inference/two_stage_inference.py```. It follows **image embedding -> result refinement** pipeline.
 
-1. Image Embedding method to attain latent codes;
-2. Result Refinement method to improve performance.
+This uniform inversion process can easily combine two methods. **Users can try any combination of methods, not limited to those employed by the original authors.** For example, GANInverter makes it possible to connect ReStyle with HyperStyle by ```--embed_mode restyle --refine_mode hyperstyle``` or PTI + e4e by `--embed_mode e4e --refine_mode pti`. 
 
-We conduct a uniform inversion process, which can easily combine two methods. **Users can try any combination of methods, not limited to those employed by the original authors.** For example, GANInverter make it possible to connect ReStyle with HyperStyle by ```--embed_mode restyle --refine_mode hyperstyle``` or PTI + e4e by `--embed_mode e4e --refine_mode pti`. 
+:collision: You can run any method combination by setting their config files now. See [Inference](#inference) for more details.
 
 For example:
 
-- e4e: `--embed_mode e4e --refine_mode None`
-- HFGI + e4e: `--embed_mode e4e --refine_mode HFGI`
-- DHR + saved codes: `--embed_mode code --refine_mode dhr --code_path /path/to/code/xxxx.pt`
+- e4e: `--configs configs/e4e/e4e_ffhq_r50.yaml`
+- PTI + e4e: ` --configs configs/e4e/e4e_ffhq_r50.yaml configs/pti/pti.yaml`
+- DHR + saved latent codes: `--embed_mode code --refine_mode dhr --code_path /path/to/code/xxxx.pt`
 
 **Supported methods:**
 
@@ -126,14 +149,6 @@ For example:
 | `--embed_mode code`    | Saved codes    | Need to set `--code_path`                        |
 | `--refine_mode pti`    | PTI            | Using `--embed_mode optim` to attain $w_{pivot}$ |
 | `--refine_mode dhr`    | DHR            |                                                  |
-
-### Configs
-
-We conduct unified config system in train/inference/test/edit. All options are saved in the config file, which can be conveniently determined for any use. 
-
-We define all options in ```options/```. ```options/base_options.py``` contains communal options in every phase. 
-
-Based on the config system, we set some rules to make this toolbox easier to use.
 
 ### Model checkpoint
 You can load a checkpoint by two ways:
@@ -177,10 +192,10 @@ python -m torch.distributed.launch --nproc_per_node=8 --master_port=12345 -c con
 
 ### Inference
 
-You can inference images by:
+You can infer images by:
 
 ``````
-python scripts/infer.py -c /path/to/config
+python scripts/infer.py -c /path/to/config1 /path/to/config2
 ``````
 
 or
@@ -215,7 +230,7 @@ python scripts/infer.py -c configs/optim/optim_celeba-hq.yaml
 **Example3: PTI+e4e**
 
 ```
-python scripts/infer.py -c configs/e4e/e4e_ffhq_r50.yaml --embed_mode encoder --refine_mode pti
+python scripts/infer.py -c configs/e4e/e4e_ffhq_r50.yaml configs/pti/pti.yaml
 ```
 
 ### Editing
