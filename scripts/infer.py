@@ -4,8 +4,6 @@ import sys
 sys.path.append('.')
 sys.path.append('..')
 
-
-from tqdm import tqdm
 import numpy as np
 import torch
 from PIL import Image
@@ -115,7 +113,6 @@ def main():
             if opts.save_intermediate:
                 save_intermediate(e_info, opts.output_dir, basename, opts.save_keys)
                 save_intermediate(r_info, opts.output_dir, basename, opts.save_keys)
-
 
 
 if __name__ == '__main__':

@@ -94,13 +94,13 @@ We follow two-stage inference in this repository. The base inference class `TwoS
 1. Image Embedding method to attain latent codes;
 2. Result Refinement method to improve performance.
 
-We conduct a uniform inversion process, which can easily combine two methods. **Users can try any combination of methods, not limited to those employed by the original authors.** For example, GANInverter make it possible to connect ReStyle with HyperStyle by ```--embed_mode restyle --refinement_mode hyperstyle``` or PTI + e4e by `--embed_mode e4e --refinement_mode pti`. 
+We conduct a uniform inversion process, which can easily combine two methods. **Users can try any combination of methods, not limited to those employed by the original authors.** For example, GANInverter make it possible to connect ReStyle with HyperStyle by ```--embed_mode restyle --refine_mode hyperstyle``` or PTI + e4e by `--embed_mode e4e --refine_mode pti`. 
 
 For example:
 
-- e4e: `--embed_mode e4e --refinement_mode None`
-- HFGI + e4e: `--embed_mode e4e --refinement_mode HFGI`
-- DHR + saved codes: `--embed_mode code --refinement_mode dhr --code_path /path/to/code/xxxx.pt`
+- e4e: `--embed_mode e4e --refine_mode None`
+- HFGI + e4e: `--embed_mode e4e --refine_mode HFGI`
+- DHR + saved codes: `--embed_mode code --refine_mode dhr --code_path /path/to/code/xxxx.pt`
 
 **Supported methods:**
 
@@ -109,8 +109,8 @@ For example:
 | `--embed_mode encoder` | pSp, e4e, LSAP |                                                  |
 | `--embed_mode optim`   | Optimization   |                                                  |
 | `--embed_mode code`    | Saved codes    | Need to set `--code_path`                        |
-| `--refinement_mode pti`    | PTI            | Using `--embed_mode optim` to attain $w_{pivot}$ |
-| `--refinement_mode dhr`    | DHR            |                                                  |
+| `--refine_mode pti`    | PTI            | Using `--embed_mode optim` to attain $w_{pivot}$ |
+| `--refine_mode dhr`    | DHR            |                                                  |
 
 ### Configs
 

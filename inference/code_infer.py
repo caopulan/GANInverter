@@ -3,7 +3,7 @@ import os
 from models.stylegan2.model import Generator
 import torch
 from utils.train_utils import load_train_checkpoint
-from.two_stage_inference import BaseInference
+from inference.inference import BaseInference
 
 
 class CodeInference(BaseInference):

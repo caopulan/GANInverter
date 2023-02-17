@@ -6,8 +6,8 @@ class TestOptions(BaseOptions):
 		super(TestOptions, self).initialize()
 
 		# arguments for inference script
-		self.parser.add_argument('--embed_mode', default='optim', type=str, help='Which mode to embed image. "encoder" for encoder-based and "optim" for optimization-based.')
-		self.parser.add_argument('--refinement_mode', default=None, type=str, help='Refinement mode. Support PTI.')
+		self.parser.add_argument('--embed_mode', default='encoder', type=str, help='Which mode to embed image. "encoder" for encoder-based and "optim" for optimization-based.')
+		self.parser.add_argument('--refine_mode', default=None, type=str, help='Refinement mode. Support PTI.')
 
 		self.parser.add_argument('--output_dir', default=None, type=str, help="Output path.")
 		self.parser.add_argument('--save_code', default=False, type=str2bool, help="Whether to save latent code.")

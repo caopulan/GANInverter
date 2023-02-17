@@ -8,9 +8,10 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from utils.train_utils import load_train_checkpoint
+from inference.inference import BaseInference
 
 
-class DHRInference:
+class DHRInference(BaseInference):
 
     def __init__(self, opts, **kwargs):
         super(DHRInference, self).__init__()

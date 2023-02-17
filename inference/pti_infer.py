@@ -6,6 +6,7 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from utils.train_utils import load_train_checkpoint
+from inference.inference import BaseInference
 
 
 class Space_Regulizer:
@@ -57,7 +58,7 @@ class Space_Regulizer:
         return ret_val
 
 
-class PTIInference:
+class PTIInference(BaseInference):
 
     def __init__(self, opts):
         super(PTIInference, self).__init__()
