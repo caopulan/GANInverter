@@ -1,17 +1,11 @@
 from tqdm import tqdm
-import numpy as np
 from criteria.lpips.lpips import LPIPS
-from utils.common import tensor2im
-from .encoder_infer import EncoderInference
-from .optim_infer import OptimizerInference
-from .code_infer import CodeInference
 import math
 from models.stylegan2.model import Generator
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
-from utils.train_utils import load_train_checkpoint, requires_grad
-
+from utils.train_utils import load_train_checkpoint
 
 
 class Space_Regulizer:
