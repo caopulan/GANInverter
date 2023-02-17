@@ -4,6 +4,7 @@ import sys
 sys.path.append('.')
 sys.path.append('..')
 
+import tqdm
 import numpy as np
 import torch
 from PIL import Image
@@ -19,7 +20,7 @@ import torchvision.transforms as transforms
 def save_intermediate(info_dict, output_dir, basename, keys):
     if info_dict is None:
         return None
-    for k, v in info_dict:
+    for k, v in info_dict.items():
         if keys is not None and k not in k:
             continue
         os.makedirs(os.path.join(output_dir, k), exist_ok=True)
@@ -34,7 +35,7 @@ def save_intermediate(info_dict, output_dir, basename, keys):
             else:  # tensor but not image
                 torch.save(v, os.path.join(output_dir, k, f'{basename}.pt'))
         # model weight
-        elif (isinstance(v, dict) and isinstance(v.keys()[0], torch.Tensor)):
+        elif (isinstance(v, dict) and isinstance(list(v.values())[0], torch.Tensor)):
             torch.save(v, os.path.join(output_dir, k, f'{basename}.pt'))
         # numpy array
         elif isinstance(v, np.ndarray):
@@ -54,7 +55,6 @@ def main():
         opts.output_dir = os.path.join(opts.exp_dir, 'inference_results')
     os.makedirs(opts.output_dir, exist_ok=True)
     os.makedirs(os.path.join(opts.output_dir, 'inversion'), exist_ok=True)
-    os.makedirs(os.path.join(opts.output_dir, 'embedding'), exist_ok=True)
 
     if opts.save_code:
         os.makedirs(os.path.join(opts.output_dir, 'code'), exist_ok=True)
@@ -85,10 +85,10 @@ def main():
         img_aug_no_resize = transform_no_resize(img)
         dataloader = [(img_aug[None], [opts.test_dataset_path], img_aug_no_resize[None])]
 
-    for input_batch in (dataloader):
+    for input_batch in tqdm.tqdm(dataloader):
         images_resize, img_paths, images = input_batch
         images_resize, images = images_resize.cuda(), images.cuda()
-        emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info = \
+        emb_images, emb_codes, emb_info, refine_images, refine_codes, refine_info = \
             inversion.inverse(images, images_resize, img_paths)
 
         H, W = emb_images.shape[2:]
@@ -98,7 +98,7 @@ def main():
             images, codes = emb_images, emb_codes
 
         emb_info = [None] * len(img_paths) if emb_info is None else emb_info
-        refine_info = [None] * len(img_paths) if emb_info is None else refine_info
+        refine_info = [None] * len(img_paths) if refine_info is None else refine_info
 
         for path, inv_img, code, e_info, r_info in zip(img_paths, images, codes, emb_info, refine_info):
             basename = os.path.basename(path).split('.')[0]

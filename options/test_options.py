@@ -12,7 +12,7 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--output_dir', default=None, type=str, help="Output path.")
 		self.parser.add_argument('--save_code', default=False, type=str2bool, help="Whether to save latent code.")
 		self.parser.add_argument('--save_intermediate', default=False, type=str2bool, help="Whether to save latent code.")
-		self.parser.add_argument('--save_key', default=None, type=str, nargs="+", help="Which intermediate info will be saved. If None, save all infos.")
+		self.parser.add_argument('--save_keys', default=None, type=str, nargs="+", help="Which intermediate info will be saved. If None, save all.")
 
 		self.parser.add_argument('--code_path', default=None, type=str)
 		self.parser.add_argument('--output_resolution', default=None, nargs="+", help="Output resolution.")

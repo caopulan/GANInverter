@@ -21,7 +21,7 @@ class BaseOptions:
         self.initialize()
 
     def initialize(self):
-        self.parser.add_argument('-c', '--config', default='', type=str, metavar='FILE', help='YAML config file '
+        self.parser.add_argument('-c', '--config', default='', type=str, nargs='+', metavar='FILE', help='YAML config file '
                                                                                               'specifying default '
                                                                                               'arguments')
         self.parser.add_argument('--exp_dir', default='one_shot', type=str, help='Path to experiment output directory')
@@ -54,8 +54,9 @@ class BaseOptions:
     def parse(self):
         opts = self.config_parser.parse_args()
         if opts.config:
-            with open(opts.config, 'r') as f:
-                cfg = yaml.safe_load(f)
-                self.parser.set_defaults(**cfg)
+            for config in opts.config:
+                with open(config, 'r') as f:
+                    cfg = yaml.safe_load(f)
+                    self.parser.set_defaults(**cfg)
         opts = self.parser.parse_args()
         return opts

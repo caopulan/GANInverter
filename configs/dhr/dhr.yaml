@@ -1,0 +1,11 @@
+refine_mode: 'dhr'
+test_batchsize: 1
+
+# dhr optiosn
+dhr_feature_idx: 11
+dhr_weight_lr: 1.5e-3
+dhr_feature_lr: 9e-2
+dhr_weight_step: 100
+dhr_feature_step: 350
+dhr_l2_lambda: 1.
+dhr_lpips_lambda: 1.

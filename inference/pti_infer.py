@@ -115,5 +115,5 @@ class PTIInference(BaseInference):
 
         images, result_latent = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
 
-        pti_info = {'generator': decoder.state_dict()}
+        pti_info = [{'generator': decoder.state_dict()}]
         return images, emb_codes, pti_info

@@ -27,12 +27,12 @@ class TwoStageInference(BaseInference):
         # Result Refinement
         if refine_mode == 'pti':
             self.refinement_module = PTIInference(opts)
-        if refine_mode == 'dhr':
+        elif refine_mode == 'dhr':
             self.refinement_module = DHRInference(opts)
         elif refine_mode is None:
             self.refinement_module = None
         else:
-            raise Exception(f'Wrong embedding mode: {embed_mode}.')
+            raise Exception(f'Wrong embedding mode: {refine_mode}.')
 
     def inverse(self, images, images_resize, image_paths, **kwargs):
         emb_images, emb_codes, emb_info = self.embedding_module.inverse(images, images_resize, image_paths)
