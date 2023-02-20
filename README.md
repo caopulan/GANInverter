@@ -73,7 +73,6 @@ Note: ```E```/```O```/```H``` means encoder-based and optimization-based methods
 |   :white_medium_square:   |       HFGI       |    [code](https://github.com/Tengfei-Wang/HFGI)    | [paper](https://arxiv.org/pdf/2109.06590)  | CVPR2022 |
 |   :white_medium_square:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
 |   :ballot_box_with_check:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |
-|   :white_medium_square:   | Near Perfect GAN Inversion | - | [paper](https://arxiv.org/abs/2202.11833) |  Arxiv   |
 |   :white_medium_square:   | FeatureStyleEncoder | [code](https://github.com/InterDigitalInc/FeatureStyleEncoder) | [paper](https://link.springer.com/chapter/10.1007/978-3-031-19784-0_34) |  ECCV2022  |
 | :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code]([caopulan/GANInverter: A GAN inversion toolbox based on PyTorch library. (github.com)](https://github.com/caopulan/Domain-Specific_Hybrid_Refinement_Inversion)) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
 
@@ -93,26 +92,27 @@ As evaluation settings are different in previous inversion works, we conduct a b
 
 **Evaluation Settings:**
 
-- Dataset: CelebA-HQ test split (2,824) images;
+- **Dataset:** CelebA-HQ test split (2,824) images;
 
-- Face recognition model: xxxx;
-- LPIPS version: VGG;
+- **ID:** identity similarity measured by [face recognition model]();
+- **LPIPS version:** VGG;
 - Images are generated and converted to uint8 except for FID, which is evaluated on saved images (png format).
+- See `scripts/test.py` for more details.
 
-| Refinement |    Embedding    | PSNR | MSE  | LPIPS |  ID  | FID  |
-| :--------: | :-------------: | :--: | :--: | :---: | :--: | :--: |
-|     -      | Optimization-W  |  -   |  -   |   -   |  -   |  -   |
-|     -      | Optimization-W+ |  -   |  -   |   -   |  -   |  -   |
-|     -      |       pSp       |  -   |  -   |   -   |  -   |  -   |
-|     -      |       e4e       |  -   |  -   |   -   |  -   |  -   |
-|     -      |      LSAP       |  -   |  -   |   -   |  -   |  -   |
-|    PTI     |     pivot_w     |  -   |  -   |   -   |  -   |  -   |
-|    PTI     |       e4e       |  -   |  -   |   -   |  -   |  -   |
-|    HFGI    |       e4e       |  -   |  -   |   -   |  -   |  -   |
-|    SAM     |       e4e       |  -   |  -   |   -   |  -   |  -   |
-|    SAM     |      LSAP       |  -   |  -   |   -   |  -   |  -   |
-|    DHR     |       e4e       |  -   |  -   |   -   |  -   |  -   |
-|    DHR     |      LSAP       |  -   |  -   |   -   |  -   |  -   |
+| Refinement |    Embedding    |  PSNR   |  MSE   | LPIPS  |  ID  | FID  |
+| :--------: | :-------------: | :-----: | :----: | :----: | :--: | :--: |
+|     -      | Optimization-W  |    -    |   -    |   -    |  -   |  -   |
+|     -      | Optimization-W+ |    -    |   -    |   -    |  -   |  -   |
+|     -      |       pSp       | 18.0348 | 0.0345 | 0.1591 |  -   |  -   |
+|     -      |       e4e       | 16.6616 | 0.0472 | 0.1974 |  -   |  -   |
+|     -      |      LSAP       | 17.4958 | 0.0391 | 0.1765 |  -   |  -   |
+|    PTI     |     pivot_w     |    -    |   -    |   -    |  -   |  -   |
+|    PTI     |       e4e       |    -    |   -    |   -    |  -   |  -   |
+|    HFGI    |       e4e       |    -    |   -    |   -    |  -   |  -   |
+|    SAM     |       e4e       |    -    |   -    |   -    |  -   |  -   |
+|    SAM     |      LSAP       |    -    |   -    |   -    |  -   |  -   |
+|    DHR     |       e4e       |    -    |   -    |   -    |  -   |  -   |
+|    DHR     |      LSAP       |    -    |   -    |   -    |  -   |  -   |
 
 **Note:** The results may be inconsistent with the reported results in our paper because the reported results are calculated by saved JPEG images.
 

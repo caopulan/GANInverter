@@ -1,5 +1,7 @@
 exp_dir: "experiments/psp/ffhq_psp_r50"
 
+encoder_type: "GradualStyleEncoder"
+
 # Data
 train_dataset_path: './data/FFHQ'
 test_dataset_path: './data/CelebA-HQ/test'
