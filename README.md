@@ -99,7 +99,7 @@ As evaluation settings are different in previous inversion works, we conduct a b
 - Images are generated and converted to uint8 except for FID, which is evaluated on saved images (png format).
 - See `scripts/test.py` for more details.
 
-| Refinement |    Embedding    | PSNR$\uparrow$ | MSE$\downarrow$ | LPIPS$\downarrow$ | ID$\uparrow$ | FID$\downarrow$ |
+| Refinement |    Embedding    | PSNR $\uparrow$ | MSE $\downarrow$ | LPIPS $\downarrow$ | ID $\uparrow$ | FID $\downarrow$ |
 | :--------: | :-------------: | :------------: | :-------------: | :---------------: | :----------: | :-------------: |
 |     -      | Optimization-W  |       -        |        -        |         -         |      -       |        -        |
 |     -      | Optimization-W+ |       -        |        -        |         -         |      -       |        -        |
