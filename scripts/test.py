@@ -13,7 +13,6 @@ from inference import TwoStageInference
 from options.test_options import TestOptions
 import torchvision.transforms as transforms
 from criteria.lpips.lpips import LPIPS
-import insightface
 
 
 def main():
