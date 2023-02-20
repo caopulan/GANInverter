@@ -99,20 +99,20 @@ As evaluation settings are different in previous inversion works, we conduct a b
 - Images are generated and converted to uint8 except for FID, which is evaluated on saved images (png format).
 - See `scripts/test.py` for more details.
 
-| Refinement |    Embedding    |  PSNR   |  MSE   | LPIPS  |  ID  | FID  |
-| :--------: | :-------------: | :-----: | :----: | :----: | :--: | :--: |
-|     -      | Optimization-W  |    -    |   -    |   -    |  -   |  -   |
-|     -      | Optimization-W+ |    -    |   -    |   -    |  -   |  -   |
-|     -      |       pSp       | 18.0348 | 0.0345 | 0.1591 |  -   |  -   |
-|     -      |       e4e       | 16.6616 | 0.0472 | 0.1974 |  -   |  -   |
-|     -      |      LSAP       | 17.4958 | 0.0391 | 0.1765 |  -   |  -   |
-|    PTI     |     pivot_w     |    -    |   -    |   -    |  -   |  -   |
-|    PTI     |       e4e       |    -    |   -    |   -    |  -   |  -   |
-|    HFGI    |       e4e       |    -    |   -    |   -    |  -   |  -   |
-|    SAM     |       e4e       |    -    |   -    |   -    |  -   |  -   |
-|    SAM     |      LSAP       |    -    |   -    |   -    |  -   |  -   |
-|    DHR     |       e4e       |    -    |   -    |   -    |  -   |  -   |
-|    DHR     |      LSAP       |    -    |   -    |   -    |  -   |  -   |
+| Refinement |    Embedding    | PSNR$\uparrow$ | MSE$\downarrow$ | LPIPS$\downarrow$ | ID$\uparrow$ | FID$\downarrow$ |
+| :--------: | :-------------: | :------------: | :-------------: | :---------------: | :----------: | :-------------: |
+|     -      | Optimization-W  |       -        |        -        |         -         |      -       |        -        |
+|     -      | Optimization-W+ |       -        |        -        |         -         |      -       |        -        |
+|     -      |       pSp       |    18.0348     |     0.0345      |      0.1591       |      -       |        -        |
+|     -      |       e4e       |    16.6616     |     0.0472      |      0.1974       |      -       |        -        |
+|     -      |      LSAP       |    17.4958     |     0.0391      |      0.1765       |      -       |        -        |
+|    PTI     |     pivot_w     |       -        |        -        |         -         |      -       |        -        |
+|    PTI     |       e4e       |       -        |        -        |         -         |      -       |        -        |
+|    HFGI    |       e4e       |       -        |        -        |         -         |      -       |        -        |
+|    SAM     |       e4e       |       -        |        -        |         -         |      -       |        -        |
+|    SAM     |      LSAP       |       -        |        -        |         -         |      -       |        -        |
+|    DHR     |       e4e       |       -        |        -        |         -         |      -       |        -        |
+|    DHR     |      LSAP       |       -        |        -        |         -         |      -       |        -        |
 
 **Note:** The results may be inconsistent with the reported results in our paper because the reported results are calculated by saved JPEG images.
 
