@@ -1,5 +1,6 @@
 refine_mode: 'pti'
-test_batchsize: 1
+test_batch_size: 1
+
 # PTI optiosn
 pti_lr: 3e-4
 pti_step: 350
