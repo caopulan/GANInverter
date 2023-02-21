@@ -42,7 +42,7 @@ class EncoderInference(BaseInference):
             images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
         return images, result_latent, None
 
-    def edit(self, images, images_resize, emb_codes, emb_images, image_path, editor):
+    def edit(self, images, images_resize, image_path, editor):
         images, codes, _ = self.inverse(images, images_resize, image_path)
         edit_codes = editor.edit_code(codes)
         edit_images = self.generate(edit_codes)

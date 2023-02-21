@@ -12,9 +12,9 @@ class InterFaceGAN(BaseEditing):
         self.save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{self.factor}'
 
         if self.edit_vector.dim() == 2:
-            self.edit_vector = self.edit_vector[None, None]
-        elif self.edit_vector.dim() == 3:
             self.edit_vector = self.edit_vector[None]
+        # elif self.edit_vector.dim() == 3:
+        #     self.edit_vector = self.edit_vector[None]
 
     def edit_code(self, code):
         return code + self.edit_vector * self.factor

@@ -4,7 +4,6 @@ sys.path.append('.')
 sys.path.append('..')
 
 from tqdm import tqdm
-import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import DataLoader
@@ -67,18 +66,12 @@ def main():
     for input_batch in tqdm(dataloader):
         images_resize, img_paths, images = input_batch
         images_resize, images = images_resize.cuda(), images.cuda()
-        emb_codes, emb_images, emb_info, refine_codes, refine_images, refine_info = \
-            inversion.inverse(images, images_resize, img_paths)
-
-        H, W = emb_images.shape[2:]
-        if refine_images is not None:
-            images, codes = refine_images, refine_codes
-        else:
-            images, codes = emb_images, emb_codes
-
 
         with torch.no_grad():
-            edit_images = inversion.edit(images, images_resize, img_paths, editor)
+            emb_images_edit, emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info \
+                = inversion.edit(images, images_resize, img_paths, editor)
+
+        edit_images = refine_images_edit if refine_images_edit is not None else emb_images_edit
 
         H, W = edit_images.shape[2:]
         for path, edit_img in zip(img_paths, edit_images):

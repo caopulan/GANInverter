@@ -53,5 +53,4 @@ class TwoStageInference(BaseInference):
             refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info = \
                 self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor)
 
-        return emb_images, emb_images_edit, emb_codes, emb_codes_edit, emb_info, \
-               refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info
+        return emb_images_edit,emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info
