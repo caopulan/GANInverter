@@ -72,7 +72,11 @@ class PTIInference(BaseInference):
 
         self.checkpoint = load_train_checkpoint(self.opts)
         origin_decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
-        origin_decoder.load_state_dict(self.checkpoint['decoder'])
+        if self.checkpoint is not None:
+            origin_decoder.load_state_dict(self.checkpoint['decoder'], strict=True)
+        else:
+            decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
+            origin_decoder.load_state_dict(decoder_checkpoint['g_ema'])
         if opts.pti_use_regularization:
             self.space_regulizer = Space_Regulizer(opts, origin_decoder, self.lpips_loss)
 

@@ -1,0 +1,11 @@
+embed_mode: 'optim'
+
+# optim options
+w_plus: False
+lr: 0.1
+optim_step: 1000
+noise: 0.05
+noise_ramp: 0.75
+noise_regularize: 1e5
+optim_l2_lambda: 0.
+optim_lpips_lambda: 1.
