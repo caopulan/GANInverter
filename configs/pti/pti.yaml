@@ -1,7 +1,10 @@
 refine_mode: 'pti'
+test_dataset_path: "/share/dataset/CelebA-HQ/"
 test_batch_size: 1
+stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
+output_dir: './pti_infer'
 
-# PTI optiosn
+# PTI options
 pti_lr: 3e-4
 pti_step: 350
 pti_l2_lambda: 1.

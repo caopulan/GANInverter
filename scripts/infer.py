@@ -72,10 +72,15 @@ def main():
     transform_no_resize = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    transform_seg = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    ])
 
     if os.path.isdir(opts.test_dataset_path):
         dataset = InversionDataset(root=opts.test_dataset_path, transform=transform,
-                                   transform_no_resize=transform_no_resize)
+                                   transform_no_resize=transform_no_resize,
+                                   transform_seg=transform_seg)
         dataloader = DataLoader(dataset,
                                 batch_size=opts.test_batch_size,
                                 shuffle=False,
@@ -89,10 +94,10 @@ def main():
         dataloader = [(img_aug[None], [opts.test_dataset_path], img_aug_no_resize[None])]
 
     for input_batch in tqdm.tqdm(dataloader):
-        images_resize, img_paths, images = input_batch
-        images_resize, images = images_resize.cuda(), images.cuda()
+        images_resize, img_paths, images, images_seg = input_batch
+        images_resize, images, images_seg = images_resize.cuda(), images.cuda(), images_seg.cuda()
         emb_images, emb_codes, emb_info, refine_images, refine_codes, refine_info = \
-            inversion.inverse(images, images_resize, img_paths)
+            inversion.inverse(images, images_resize, img_paths, images_seg)
 
         H, W = emb_images.shape[2:]
         if refine_images is not None:

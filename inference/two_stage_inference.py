@@ -3,6 +3,7 @@ from .encoder_infer import EncoderInference
 from .optim_infer import OptimizerInference
 from .pti_infer import PTIInference
 from .dhr_infer import DHRInference
+from .sam_infer import SamInference
 from inference.inference import BaseInference
 
 
@@ -29,16 +30,18 @@ class TwoStageInference(BaseInference):
             self.refinement_module = PTIInference(opts)
         elif refine_mode == 'dhr':
             self.refinement_module = DHRInference(opts)
+        elif refine_mode == 'sam':
+            self.refinement_module = SamInference(opts)
         elif refine_mode is None:
             self.refinement_module = None
         else:
             raise Exception(f'Wrong embedding mode: {refine_mode}.')
 
-    def inverse(self, images, images_resize, image_paths, **kwargs):
+    def inverse(self, images, images_resize, image_paths, images_seg, **kwargs):
         emb_images, emb_codes, emb_info = self.embedding_module.inverse(images, images_resize, image_paths)
         if self.refine_mode is not None:
             refine_images, refine_codes, refine_info = \
-                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
+                self.refinement_module.inverse(images, images_resize, image_paths, images_seg, emb_codes, emb_images, emb_info)
         else:
             refine_images, refine_codes, refine_info = None, None, None
 
@@ -53,4 +56,4 @@ class TwoStageInference(BaseInference):
             refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info = \
                 self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor)
 
-        return emb_images_edit,emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info
+        return emb_images_edit, emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info

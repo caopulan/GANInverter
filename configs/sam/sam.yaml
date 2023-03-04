@@ -1,0 +1,6 @@
+refine_mode: 'sam'
+test_dataset_path: "/share/dataset/CelebA-HQ/"
+test_batch_size: 1
+test_workers: 0
+stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
+output_dir: './sam_infer_1024'
