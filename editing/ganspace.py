@@ -10,7 +10,10 @@ class GANSpace(BaseEditing):
         self.code_mean = ganspace_pca['mean'].cuda()
         self.code_comp = ganspace_pca['comp'].cuda()[self.pca_idx]
         self.code_std = ganspace_pca['std'].cuda()[self.pca_idx]
-        self.save_folder = f'ganspace_{self.pca_idx}_{self.start}_{self.end}_{self.strength}'
+        if opts.edit_save_path == '':
+            self.save_folder = f'ganspace_{self.pca_idx}_{self.start}_{self.end}_{self.strength}'
+        else:
+            self.save_folder = opts.edit_save_path
 
     def edit_code(self, code):
         edit_codes = []
