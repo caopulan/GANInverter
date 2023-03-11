@@ -41,7 +41,7 @@ class TwoStageInference(BaseInference):
         emb_images, emb_codes, emb_info = self.embedding_module.inverse(images, images_resize, image_paths)
         if self.refine_mode is not None:
             refine_images, refine_codes, refine_info = \
-                self.refinement_module.inverse(images, images_resize, image_paths, images_seg, emb_codes, emb_images, emb_info)
+                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info, images_seg)
         else:
             refine_images, refine_codes, refine_info = None, None, None
 

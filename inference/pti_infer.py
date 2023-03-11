@@ -80,7 +80,7 @@ class PTIInference(BaseInference):
         if opts.pti_use_regularization:
             self.space_regulizer = Space_Regulizer(opts, origin_decoder, self.lpips_loss)
 
-    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info):
+    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, **kwargs):
         # initialize decoder and regularization decoder
         decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
         decoder.train()

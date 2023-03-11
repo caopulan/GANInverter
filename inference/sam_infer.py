@@ -12,6 +12,7 @@ from models.stylegan2.model import Generator
 from utils.train_utils import load_train_checkpoint
 from inference.inference import BaseInference
 from models.encoder import Encoder
+import tqdm
 
 
 latent_names = "W+,F4,F6,F8,F10"
@@ -155,7 +156,7 @@ class SamInference(BaseInference):
 
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_paths, images_seg, emb_codes, emb_images, emb_info):
+    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, images_seg):
         with torch.no_grad():
             # segment the target image
             segments = self.segmenter.segment_pil(images_seg)
@@ -185,7 +186,7 @@ class SamInference(BaseInference):
         optimizer = torch.optim.Adam([d_latents[k] for k in d_latents], lr=0.05, betas=(0.9, 0.999))
 
         # optimization loop
-        for i in range(1001):
+        for i in tqdm.tqdm(range(1001)):
             # learning rate scheduling
             t = i / 1001
             lr_ramp = min(1.0, (1.0 - t) / 0.25)
@@ -199,17 +200,18 @@ class SamInference(BaseInference):
             rec_full, result_latent = self.decoder([d_latents['W+']],
                                                    input_is_latent=True,
                                                    return_latents=True,
+                                                   randomize_noise=False,
                                                    sam_masks=d_refined_resized_invmap,
                                                    sam_features=d_latents,
                                                    sam_idxes=[3, 5, 7, 9])
 
             # compute the reconstruction losses using smaller 256x256 images
-            # rec = F.interpolate(rec_full, size=(256, 256), mode='area').clamp(-1, 1)
+            rec = F.interpolate(rec_full, size=(256, 256), mode='area').clamp(-1, 1)
 
             # image reconstruction losses
             rec_losses = 0.0
             rec_losses += F.mse_loss(rec_full, images)
-            rec_losses += self.lpips_loss(rec_full, images)
+            rec_losses += self.lpips_loss(rec, images_resize)
             log_str += f"rec: {rec_losses:.3f} "
             # latent regularization
             latent_losses = 0.0
@@ -239,6 +241,7 @@ class SamInference(BaseInference):
             images, result_latent = self.decoder([d_latents['W+']],
                                                  input_is_latent=True,
                                                  return_latents=True,
+                                                 randomize_noise=False,
                                                  sam_masks=d_refined_resized_invmap,
                                                  sam_features=d_latents,
                                                  sam_idxes=[3, 5, 7, 9])

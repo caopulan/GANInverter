@@ -48,7 +48,7 @@ class DHRInference(BaseInference):
         parsing_result = faces_celeb['seg']['logits'].softmax(dim=1)[0]#.cpu().numpy()
         return parsing_result
 
-    def inverse(self, images, images_resize, image_name, emb_codes, emb_images, mask_result):
+    def inverse(self, images, images_resize, image_name, emb_codes, emb_images, **kwargs):
         refine_info = dict()
 
         # initialize decoder and regularization decoder
@@ -70,7 +70,7 @@ class DHRInference(BaseInference):
                                                                                    bg_score, bg_score]
 
         # Domain-Specific Segmentation
-        if False and os.path.exists(f'{self.opts.output_dir}/mask_refine_pt/{os.path.basename(image_name[0])[:-4]}.pt'):
+        if os.path.exists(f'{self.opts.output_dir}/mask_refine_pt/{os.path.basename(image_name[0])[:-4]}.pt'):
             # load segmentation if exist
             m = torch.load(f'{self.opts.output_dir}/mask_refine_pt/{os.path.basename(image_name[0])[:-4]}.pt')
             m = m.cuda()
@@ -86,10 +86,7 @@ class DHRInference(BaseInference):
             mask_parsing = mask_parsing[None, None]
 
             # Superpixel
-            import time
-            start_time = time.time()
             superpixel = slic(cv2.imread(image_name[0]), n_segments=200, compactness=30, sigma=1)
-            print(time.time() - start_time)
             mask_sp = torch.zeros((self.opts.resolution, self.opts.resolution))
             for sp_i in range(1, 1 + int(superpixel.max())):
                 ds = []
@@ -113,7 +110,7 @@ class DHRInference(BaseInference):
         mask_ori = m.clone()
 
         # Hybrid Refinement Modulation
-        if False and os.path.exists(
+        if os.path.exists(
                 f'{self.opts.output_dir}/weight/{os.path.basename(image_name[0])[:-4]}.pt') and os.path.exists(
                 f'{self.opts.output_dir}/feature/{os.path.basename(image_name[0])[:-4]}.pt'):
             # load weight and feature if exist.

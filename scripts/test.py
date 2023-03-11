@@ -36,10 +36,15 @@ def main():
     transform_no_resize = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    transform_seg = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    ])
 
     if os.path.isdir(opts.test_dataset_path):
         dataset = InversionDataset(root=opts.test_dataset_path, transform=transform,
-                                   transform_no_resize=transform_no_resize)
+                                   transform_no_resize=transform_no_resize,
+                                   transform_seg=transform_seg)
         dataloader = DataLoader(dataset,
                                 batch_size=opts.test_batch_size,
                                 shuffle=False,
@@ -56,20 +61,16 @@ def main():
     mse, psnr, id = torch.zeros([0]).cuda(), torch.zeros([0]).cuda(), torch.zeros([0]).cuda()
     for input_batch in tqdm.tqdm(dataloader):
         # Inversion
-        images_resize, img_paths, images = input_batch
-        images_resize, images = images_resize.cuda(), images.cuda()
+        images_resize, img_paths, images, images_seg = input_batch
+        images_resize, images, images_seg = images_resize.cuda(), images.cuda(), images_seg.cuda()
         count += len(img_paths)
         emb_images, emb_codes, emb_info, refine_images, refine_codes, refine_info = \
-            inversion.inverse(images, images_resize, img_paths)
-        H, W = emb_images.shape[2:]
+            inversion.inverse(images, images_resize, img_paths, images_seg)
+
         if refine_images is not None:
             images_inv, codes = refine_images, refine_codes
         else:
             images_inv, codes = emb_images, emb_codes
-
-        # from utils.common import tensor2im
-        # for img, path in zip(images_inv, img_paths):
-        #     tensor2im(img).save(f'samples/e4e/{os.path.basename(path)[:-4]}.png')
 
         # Evaluation
         images_inv = float2uint2float(images_inv)
@@ -80,6 +81,7 @@ def main():
         mse = torch.cat([mse, batch_mse])
         psnr = torch.cat([psnr, batch_psnr])
         lpips += len(img_paths) * batch_lpips.item()
+        print(f'Batch result: MSE {batch_mse.mean().item()}, PSNR {batch_psnr.mean().item()}')
 
     print('MSE ', mse.mean().item())
     print('PSNR:', psnr.mean().item())

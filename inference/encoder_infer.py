@@ -35,11 +35,12 @@ class EncoderInference(BaseInference):
             latent_avg = self.decoder.mean_latent(int(1e5))[0].detach() if checkpoint is None else None
         self.encoder = Encoder(opts, checkpoint, latent_avg, device=self.device).to(self.device)
         self.encoder.set_progressive_stage(self.opts.n_styles)
+        self.encoder.eval()
 
     def inverse(self, images, images_resize, image_path, **kwargs):
         with torch.no_grad():
             codes = self.encoder(images_resize)
-            images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True)
+            images, result_latent = self.decoder([codes], input_is_latent=True, return_latents=True, randomize_noise=False)
         return images, result_latent, None
 
     def edit(self, images, images_resize, image_path, editor):
