@@ -39,6 +39,8 @@ We will release v2.0 around early 2023:
 
 **We are working for supporting more methods' inference and conducting the benchmark.**
 
+**`2023.02`**: SAM is supported.
+
 **`2023.02`**: V1.1. Re-organized codes: methods' class, inference pipeline. Add our new work DHR ["What Decreases Editing Capability? Domain-Specific Hybrid Refinement for Improved GAN Inversion"](https://arxiv.org/abs/2301.12141).
 
 **`2022.11`**: Add more optimizers and PTI is supported now.
@@ -71,10 +73,10 @@ Note: ```E```/```O```/```H``` means encoder-based and optimization-based methods
 | :--: | :--------------: | :------------------------------------------------: | :----------------------------------------: | :------: |
 |   :white_medium_square:   |    HyperStyle    | [code](https://github.com/yuval-alaluf/hyperstyle) | [paper](https://arxiv.org/abs/2111.15666)  | CVPR2022 |
 |   :white_medium_square:   |       HFGI       |    [code](https://github.com/Tengfei-Wang/HFGI)    | [paper](https://arxiv.org/pdf/2109.06590)  | CVPR2022 |
-|   :white_medium_square:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
+|   :ballot_box_with_check:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
 |   :ballot_box_with_check:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |
 |   :white_medium_square:   | FeatureStyleEncoder | [code](https://github.com/InterDigitalInc/FeatureStyleEncoder) | [paper](https://link.springer.com/chapter/10.1007/978-3-031-19784-0_34) |  ECCV2022  |
-| :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code]([caopulan/GANInverter: A GAN inversion toolbox based on PyTorch library. (github.com)](https://github.com/caopulan/Domain-Specific_Hybrid_Refinement_Inversion)) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
+| :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code](./configs/lsap) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
 
 ### 3. Editing Methods
 
