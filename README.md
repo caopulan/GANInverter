@@ -60,7 +60,7 @@ According to the purpose of methods, we divide the inversion process into two st
 | :--: | :---------------: | :--: | :------------------------------------------------------: | :----------------------------------------------------------: | :----------: |
 |   :ballot_box_with_check:   |        pSp        |  E   |  [code](https://github.com/eladrich/pixel2style2pixel)   |          [paper](https://arxiv.org/abs/2008.00951)           |   CVPR2021   |
 |   :ballot_box_with_check:   |        e4e        |  E   |    [code](https://github.com/omertov/encoder4editing)    |          [paper](https://arxiv.org/abs/2102.02766)           | SIGGRAPH2021 |
-|   :ballot_box_with_check:   |       LSAP        |  E   | [code](https://github.com/caopulan/GANInverter) |       [paper](https://arxiv.org/abs/2209.12746)                                                       |    Arxiv2022    |
+|   :ballot_box_with_check:   |       LSAP        |  E   | [code](./configs/lsap) |       [paper](https://arxiv.org/abs/2209.12746)                                                       |    Arxiv2022    |
 |   :white_medium_square:   |      E2Style      |  E   |       [code](https://github.com/wty-ustc/e2style)        | [paper](https://wty-ustc.github.io/inversion/paper/E2Style.pdf) |   TIP2022    |
 |   :white_medium_square:   | Style Transformer |  E   | [code](https://github.com/sapphire497/style-transformer) |          [paper](https://arxiv.org/abs/2203.07932)           |   CVPR2022   |
 |   :ballot_box_with_check:   | StyleGAN2(LPIPS)  |  O   | [code](https://github.com/rosinality/stylegan2-pytorch)  |           [paper](http://arxiv.org/abs/1912.04958)           |   CVPR2020   |
@@ -73,10 +73,10 @@ Note: ```E```/```O```/```H``` means encoder-based and optimization-based methods
 | :--: | :--------------: | :------------------------------------------------: | :----------------------------------------: | :------: |
 |   :white_medium_square:   |    HyperStyle    | [code](https://github.com/yuval-alaluf/hyperstyle) | [paper](https://arxiv.org/abs/2111.15666)  | CVPR2022 |
 |   :white_medium_square:   |       HFGI       |    [code](https://github.com/Tengfei-Wang/HFGI)    | [paper](https://arxiv.org/pdf/2109.06590)  | CVPR2022 |
-|   :ballot_box_with_check:   |       SAM        | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
+|   :ballot_box_with_check:   |       SAM       | [code](https://github.com/adobe-research/sam_inversion) | [paper](https://arxiv.org/abs/2206.08357) | CVPR2022 |
 |   :ballot_box_with_check:   |       PTI        |     [code](https://github.com/danielroich/PTI)     | [paper](https://arxiv.org/abs/2106.05744) | TOG2022  |
 |   :white_medium_square:   | FeatureStyleEncoder | [code](https://github.com/InterDigitalInc/FeatureStyleEncoder) | [paper](https://link.springer.com/chapter/10.1007/978-3-031-19784-0_34) |  ECCV2022  |
-| :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code](./configs/lsap) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
+| :ballot_box_with_check: | Domain-Specific Hybrid Refinement (DHR) | [code](./configs/dhr) | [paper](https://arxiv.org/abs/2301.12141) | Arxiv2023 |
 
 ### 3. Editing Methods
 
@@ -98,7 +98,7 @@ As evaluation settings are different in previous inversion works, we conduct a b
 
 - **ID:** identity similarity measured by [face recognition model]();
 - **LPIPS version:** VGG;
-- Images are generated and converted to uint8 except for FID, which is evaluated on saved images (png format).
+- Images are generated and converted to uint8 to evaluate, except for ID and FID, which are evaluated on saved images (png format).
 - See `scripts/test.py` for more details.
 
 | Refinement |    Embedding    | PSNR $\uparrow$ | MSE $\downarrow$ | LPIPS $\downarrow$ | ID $\uparrow$ | FID $\downarrow$ |
@@ -108,7 +108,7 @@ As evaluation settings are different in previous inversion works, we conduct a b
 |     -      |       pSp       |    18.0348     |     0.0345      |      0.1591       |      -       |        -        |
 |     -      |       e4e       |    16.6616     |     0.0472      |      0.1974       |      -       |        -        |
 |     -      |      LSAP       |    17.4958     |     0.0391      |      0.1765       |      -       |        -        |
-|    PTI     |     pivot_w     |       -        |        -        |         -         |      -       |        -        |
+|    PTI     |     pivot_w     |       24.6004       |        0.0082        |         0.0820         |      -       |        -        |
 |    PTI     |       e4e       |       -        |        -        |         -         |      -       |        -        |
 |    HFGI    |       e4e       |       -        |        -        |         -         |      -       |        -        |
 |    SAM     |       e4e       |       -        |        -        |         -         |      -       |        -        |
@@ -116,7 +116,7 @@ As evaluation settings are different in previous inversion works, we conduct a b
 |    DHR     |       e4e       |       -        |        -        |         -         |      -       |        -        |
 |    DHR     |      LSAP       |       -        |        -        |         -         |      -       |        -        |
 
-**Note:** The results may be inconsistent with the reported results in our paper because the reported results are calculated by saved JPEG images.
+**Note:** The results may be inconsistent with the reported results in our paper because of different implementations.
 
 ## Unified Pipeline
 
