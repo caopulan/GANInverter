@@ -33,7 +33,7 @@ def main():
     inversion = TwoStageInference(opts)
 
     if opts.output_dir is None:
-        opts.output_dir = os.path.join(opts.exp_dir, 'edit_results')
+        opts.output_dir = opts.exp_dir
     os.makedirs(opts.output_dir, exist_ok=True)
     os.makedirs(os.path.join(opts.output_dir, save_folder), exist_ok=True)
 
@@ -67,9 +67,9 @@ def main():
         images_resize, img_paths, images = input_batch
         images_resize, images = images_resize.cuda(), images.cuda()
 
-        with torch.no_grad():
-            emb_images_edit, emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info \
-                = inversion.edit(images, images_resize, img_paths, editor)
+        # with torch.no_grad():
+        emb_images_edit, emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info \
+            = inversion.edit(images, images_resize, img_paths, editor)
 
         edit_images = refine_images_edit if refine_images_edit is not None else emb_images_edit
 

@@ -89,7 +89,7 @@ class OptimizerInference(BaseInference):
         # initial loss
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
 
-    def inverse(self, images, images_resize, image_name, return_lpips=False, **kwargs):
+    def inverse(self, images, images_resize, image_name, return_lpips=False):
         if self.latent_std is None:
             n_mean_latent = 10000
             with torch.no_grad():

@@ -30,7 +30,7 @@ class CodeInference(BaseInference):
                 decoder_checkpoint = torch.load(opts.stylegan_weights, map_location='cpu')
                 self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
-    def inverse(self, images, images_resize, image_name, **kwargs):
+    def inverse(self, images, images_resize, image_name):
         codes = []
         for path in image_name:
             code_path = os.path.join(self.code_path, f'{os.path.basename(path[:-4])}.pt')

@@ -48,7 +48,8 @@ class DHRInference(BaseInference):
         parsing_result = faces_celeb['seg']['logits'].softmax(dim=1)[0]#.cpu().numpy()
         return parsing_result
 
-    def inverse(self, images, images_resize, image_name, emb_codes, emb_images, **kwargs):
+    def inverse(self, images, images_resize, image_name, emb_codes, emb_images, emb_info):
+        assert images.shape[0] == 1, 'DHR is only supported for batchsize 1.'
         refine_info = dict()
 
         # initialize decoder and regularization decoder
@@ -143,7 +144,7 @@ class DHRInference(BaseInference):
                     lpips_bg.append((lpips * (1 - m)).sum() / (1 - m).sum())
 
                 loss_lpips = torch.stack([l.mean() for l in loss_lpips]).sum()
-                loss = self.opts.dhr_lpips_lambda * loss_lpips + self.opts.dhr_l2_lambda * loss_mse
+                # loss = self.opts.dhr_lpips_lambda * loss_lpips + self.opts.dhr_l2_lambda * loss_mse
 
                 loss_lpips_bg = torch.stack(lpips_bg).sum()
                 loss_mse_bg = ((F.mse_loss(gen_images, images, reduction='none') * (1 - mask_ori)).sum() / (
@@ -163,9 +164,9 @@ class DHRInference(BaseInference):
                     loss_face.backward()
                     optimizer.step()
 
-            refine_info['weight'] = decoder.state_dict()
-            refine_info['feature'] = offset.clone()
-            refine_info['mask'] = mask.clone()
+        refine_info['weight'] = decoder.state_dict()
+        refine_info['feature'] = offset.clone()
+        refine_info['mask'] = mask.clone()
 
         images, result_latent = decoder([emb_codes], feature_idx=feature_idx, offset=offset, mask=mask,
                                         input_is_latent=True, randomize_noise=False)
@@ -173,12 +174,14 @@ class DHRInference(BaseInference):
 
     def edit(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor):
         images, codes, refine_info = self.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
-        decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
-        decoder.train()
-        decoder.load_state_dict(refine_info['weight'], strict=True)
-        edit_codes = editor.edit_code(codes)
+        refine_info = refine_info[0]
+        with torch.no_grad():
+            decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
+            decoder.train()
+            decoder.load_state_dict(refine_info['weight'], strict=True)
+            edit_codes = editor.edit_code(codes)
 
-        edit_images, edit_codes = decoder([edit_codes], feature_idx=self.opts.dhr_feature_idx,
-                                          offset=refine_info['feature'], mask=refine_info['mask'], input_is_latent=True,
-                                          randomize_noise=False)
+            edit_images, edit_codes = decoder([edit_codes], feature_idx=self.opts.dhr_feature_idx,
+                                              offset=refine_info['feature'], mask=refine_info['mask'],
+                                              input_is_latent=True, randomize_noise=False)
         return images, edit_images, codes, edit_codes, refine_info

@@ -9,7 +9,11 @@ class InterFaceGAN(BaseEditing):
         self.opts = opts
         self.edit_vector = torch.load(opts.edit_path, map_location='cpu').cuda()
         self.factor = opts.edit_factor
-        self.save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{self.factor}'
+
+        if opts.edit_save_path == '':
+            self.save_folder = f'{os.path.basename(opts.edit_path).split(".")[0]}_{self.factor}'
+        else:
+            self.save_folder = opts.edit_save_path
 
         if self.edit_vector.dim() == 2:
             self.edit_vector = self.edit_vector[None]

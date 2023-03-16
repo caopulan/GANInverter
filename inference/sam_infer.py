@@ -13,6 +13,7 @@ from utils.train_utils import load_train_checkpoint
 from inference.inference import BaseInference
 from models.encoder import Encoder
 import tqdm
+import torchvision.transforms as transforms
 
 
 latent_names = "W+,F4,F6,F8,F10"
@@ -155,17 +156,21 @@ class SamInference(BaseInference):
         self.segmenter = SegmenterFace(model_paths['segmenter_faces'], fuse_face_regions=True)
 
         self.lpips_loss = LPIPS(net_type='vgg').to(self.device).eval()
+        self.seg_trans = transforms.Compose([
+            transforms.Normalize((-1., -1., -1.), (2., 2., 2.)),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ])
 
-    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, images_seg):
+    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, ):
         with torch.no_grad():
+            images_seg = self.seg_trans(images)
             # segment the target image
             segments = self.segmenter.segment_pil(images_seg)
-
             # make the invertibility latent map
             d_invmaps = self.invert_predictor(images)
             d_invmaps = {n: self.d_heads[n](d_invmaps) for n in latent_names.split(",")}
 
-        thresh = 0.2
+        thresh = 0.225
         # refine the invertibility map
         d_refined_invmap = refine(d_invmaps, segments, thresh)
         # resize the masks

@@ -7,7 +7,7 @@ from .sam_infer import SamInference
 from inference.inference import BaseInference
 
 
-class TwoStageInference(BaseInference):
+class TwoStageInference():
     def __init__(self, opts, decoder=None):
         super(TwoStageInference, self).__init__()
         # mode in two stages
@@ -37,7 +37,7 @@ class TwoStageInference(BaseInference):
         else:
             raise Exception(f'Wrong embedding mode: {refine_mode}.')
 
-    def inverse(self, images, images_resize, image_paths, images_seg, **kwargs):
+    def inverse(self, images, images_resize, image_paths):
         emb_images, emb_codes, emb_info = self.embedding_module.inverse(images, images_resize, image_paths)
         if self.refine_mode is not None:
             refine_images, refine_codes, refine_info = \
@@ -54,6 +54,6 @@ class TwoStageInference(BaseInference):
             self.embedding_module.edit(images, images_resize, image_paths, editor)
         if self.refine_mode is not None:
             refine_images, refine_images_edit, refine_codes, refine_codes_edit, refine_info = \
-                self.refinement_module.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor)
+                self.refinement_module.edit(images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor)
 
         return emb_images_edit, emb_codes_edit, emb_info, refine_images_edit, refine_codes_edit, refine_info

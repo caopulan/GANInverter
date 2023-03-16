@@ -80,7 +80,9 @@ class PTIInference(BaseInference):
         if opts.pti_use_regularization:
             self.space_regulizer = Space_Regulizer(opts, origin_decoder, self.lpips_loss)
 
-    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, **kwargs):
+    def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info):
+        assert images.shape[0] == 1, 'PTI is only supported for batchsize 1.'
+
         # initialize decoder and regularization decoder
         decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
         decoder.train()
@@ -103,9 +105,9 @@ class PTIInference(BaseInference):
             loss = self.opts.pti_lpips_lambda * loss_lpips + self.opts.pti_l2_lambda * loss_mse
 
             # TODO: use regularization may cause some erros
-            if self.opts.pti_use_regularization and i % self.opts.pti_locality_regularization_interval == 0:
-                ball_holder_loss_val = self.space_regulizer.space_regulizer_loss(decoder, emb_codes)
-                loss += self.opts.pti_regulizer_lambda * ball_holder_loss_val
+            # if self.opts.pti_use_regularization and i % self.opts.pti_locality_regularization_interval == 0:
+            #     ball_holder_loss_val = self.space_regulizer.space_regulizer_loss(decoder, emb_codes)
+            #     loss += self.opts.pti_regulizer_lambda * ball_holder_loss_val
 
             optimizer.zero_grad()
             loss.backward()
@@ -116,8 +118,20 @@ class PTIInference(BaseInference):
                     f"loss: {loss.item():.4f}; lr: {self.opts.pti_lr:.4f};"
                 )
             )
-
-        images, result_latent = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
+        with torch.no_grad():
+            images, result_latent = decoder([emb_codes], input_is_latent=True, randomize_noise=False)
 
         pti_info = [{'generator': decoder.state_dict()}]
         return images, emb_codes, pti_info
+
+    def edit(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor):
+        images, codes, refine_info = self.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
+        refine_info = refine_info[0]
+        with torch.no_grad():
+            decoder = Generator(self.opts.resolution, 512, 8).to(self.device)
+            decoder.train()
+            decoder.load_state_dict(refine_info['generator'], strict=True)
+            edit_codes = editor.edit_code(codes)
+
+            edit_images, edit_codes = decoder([edit_codes], input_is_latent=True, randomize_noise=False)
+        return images, edit_images, codes, edit_codes, refine_info
