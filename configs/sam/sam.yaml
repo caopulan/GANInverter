@@ -3,4 +3,15 @@ test_dataset_path: "/share/dataset/CelebA-HQ/"
 test_batch_size: 1
 test_workers: 0
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
-output_dir: './sam_infer_1024'
+output_dir: './sam_infer_noF8'
+
+# SAM options
+latent_names: "W+,F4,F6,F10"
+thresh: 0.225
+sam_lr: 0.05
+sam_step: 1001
+sam_rec_l2_lambda: 1.
+sam_rec_lpips_lambda: 1.
+sam_lat_mvg_lambda: 1e-8
+sam_lat_delta_lambda: 1e-3
+sam_lat_frec_lambda: 5.

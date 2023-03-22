@@ -41,6 +41,19 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--pti_regulizer_alpha', default=30, type=float, help='weight of interpolation between embedding and samples')
 		self.parser.add_argument('--pti_latent_ball_num_of_samples', default=1, type=int)
 
+		# arguments for SAM inversion
+		self.parser.add_argument('--latent_names', default="W+,F4,F6,F8,F10", type=str, help='')
+		self.parser.add_argument('--thresh', default=0.225, type=float, help='')
+		self.parser.add_argument('--sam_lr', default=0.05, type=float, help='')
+		self.parser.add_argument('--sam_step', default=1001, type=int, help='')
+		self.parser.add_argument('--sam_rec_lambda', default=1., type=float, help='')
+		self.parser.add_argument('--sam_rec_l2_lambda', default=1., type=float, help='')
+		self.parser.add_argument('--sam_rec_lpips_lambda', default=1., type=float, help='')
+		self.parser.add_argument('--sam_lat_lambda', default=1., type=float, help='')
+		self.parser.add_argument('--sam_lat_mvg_lambda', default=1e-8, type=float, help='')
+		self.parser.add_argument('--sam_lat_delta_lambda', default=1e-3, type=float, help='')
+		self.parser.add_argument('--sam_lat_frec_lambda', default=5., type=float, help='')
+
 		# arguments for DHR inversion
 		self.parser.add_argument('--dhr_feature_idx', default=11, type=int, help='')
 		self.parser.add_argument('--dhr_weight_lr', default=1.5e-3, type=float, help='')

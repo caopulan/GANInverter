@@ -16,9 +16,6 @@ import tqdm
 import torchvision.transforms as transforms
 
 
-latent_names = "W+,F4,F6,F8,F10"
-
-
 def get_mvg_stats(G, device=torch.device('cuda')):
     # label_c = torch.zeros([1, G.c_dim], device=device)
     buf_v = np.zeros((5000, 512))
@@ -54,23 +51,31 @@ def refine(d_invmaps, seg_map, tau):
         latent_for_this_segment = "F10"
         for l_name in idx2latent:
             # check the average inv value inside the segment
-            avg_val = (d_invmaps[l_name].detach().cpu()*curr_segment).sum() / curr_segment.sum()
-            if avg_val <= tau:
-                latent_for_this_segment = l_name
+            if l_name in d_invmaps.keys():
+                avg_val = (d_invmaps[l_name].detach().cpu() * curr_segment).sum() / curr_segment.sum()
+                if avg_val <= tau:
+                    latent_for_this_segment = l_name
         refined[curr_segment] = latent2idx[latent_for_this_segment]
     # expand the latent map into individual binary masks
-    d_refined = {name: torch.tensor((refined == idx)[None, None]) for idx, name in enumerate(idx2latent)}
+    d_refined = {name: torch.tensor((refined == idx)[None, None]) for idx, name in enumerate(idx2latent) if name in d_invmaps.keys()}
     return d_refined
 
 
 def resize_binary_masks(d_refined_invmap):
-    d_out = {
-        "W+": d_refined_invmap["W+"][0, 0].detach().cpu().numpy(),
-        "F4": resize_single_channel(d_refined_invmap["F4"][0, 0].detach().cpu().numpy(), (16, 16), Image.LANCZOS),
-        "F6": resize_single_channel(d_refined_invmap["F6"][0, 0].detach().cpu().numpy(), (32, 32), Image.LANCZOS),
-        "F8": resize_single_channel(d_refined_invmap["F8"][0, 0].detach().cpu().numpy(), (64, 64), Image.LANCZOS),
-        "F10": resize_single_channel(d_refined_invmap["F10"][0, 0].detach().cpu().numpy(), (128, 128), Image.LANCZOS),
-    }
+    d_out = {}
+    for k, v in d_refined_invmap.items():
+        if k == "W+":
+            d_out[k] = v[0, 0].detach().cpu().numpy()
+        else:
+            size = 2 ** (int(k[1:]) // 2 + 2)
+            d_out[k] = resize_single_channel(v[0, 0].detach().cpu().numpy(), (size, size), Image.LANCZOS)
+    # d_out = {
+    #     "W+": d_refined_invmap["W+"][0, 0].detach().cpu().numpy(),
+    #     "F4": resize_single_channel(d_refined_invmap["F4"][0, 0].detach().cpu().numpy(), (16, 16), Image.LANCZOS),
+    #     "F6": resize_single_channel(d_refined_invmap["F6"][0, 0].detach().cpu().numpy(), (32, 32), Image.LANCZOS),
+    #     "F8": resize_single_channel(d_refined_invmap["F8"][0, 0].detach().cpu().numpy(), (64, 64), Image.LANCZOS),
+    #     "F10": resize_single_channel(d_refined_invmap["F10"][0, 0].detach().cpu().numpy(), (128, 128), Image.LANCZOS),
+    # }
     d_out = {k: torch.tensor(d_out[k][None, None]).cuda() for k in d_out.keys()}
     return d_out
 
@@ -147,7 +152,7 @@ class SamInference(BaseInference):
         sd = torch.load(model_paths['invert_predictor_faces'], map_location='cpu')
         self.invert_predictor.load_state_dict(sd["sd_base"])
         self.d_heads = {}
-        for name in latent_names.split(","):
+        for name in opts.latent_names.split(","):
             self.d_heads[name] = LayerHead().cuda()
             self.d_heads[name].load_state_dict(sd[name])
             self.d_heads[name].eval()
@@ -168,15 +173,19 @@ class SamInference(BaseInference):
             segments = self.segmenter.segment_pil(images_seg)
             # make the invertibility latent map
             d_invmaps = self.invert_predictor(images)
-            d_invmaps = {n: self.d_heads[n](d_invmaps) for n in latent_names.split(",")}
+            d_invmaps = {n: self.d_heads[n](d_invmaps) for n in self.opts.latent_names.split(",")}
 
-        thresh = 0.225
         # refine the invertibility map
-        d_refined_invmap = refine(d_invmaps, segments, thresh)
+        print(d_invmaps.keys())
+        d_refined_invmap = refine(d_invmaps, segments, self.opts.thresh)
+        print(d_refined_invmap.keys())
         # resize the masks
         d_refined_resized_invmap = resize_binary_masks(d_refined_invmap)
+        print(d_refined_invmap.keys())
 
         # W+ is initialized with e4e encoder outputs
+        sam_idxes = [int(n[1:]) - 1 for n in self.opts.latent_names.split(",") if n != "W+"]
+        print(sam_idxes)
         d_latents_init = {
             "W+": emb_codes.detach().clone().to(self.device),
             "F4": torch.zeros((1, 512, 16, 16)).to(self.device),
@@ -184,16 +193,17 @@ class SamInference(BaseInference):
             "F8": torch.zeros((1, 512, 64, 64)).to(self.device),
             "F10": torch.zeros((1, 256, 128, 128)).to(self.device),
         }
-        d_latents = {k: d_latents_init[k].detach().clone() for k in d_latents_init}
+        d_latents = {k: d_latents_init[k].detach().clone() for k in self.opts.latent_names.split(",")}
         for k in d_latents:
             d_latents[k].requires_grad = True
         # define the optimizer
-        optimizer = torch.optim.Adam([d_latents[k] for k in d_latents], lr=0.05, betas=(0.9, 0.999))
+        print(d_latents.keys())
+        optimizer = torch.optim.Adam([d_latents[k] for k in d_latents], lr=self.opts.sam_lr, betas=(0.9, 0.999))
 
         # optimization loop
-        for i in tqdm.tqdm(range(1001)):
+        for i in tqdm.tqdm(range(self.opts.sam_step)):
             # learning rate scheduling
-            t = i / 1001
+            t = i / self.opts.sam_step
             lr_ramp = min(1.0, (1.0 - t) / 0.25)
             lr_ramp = 0.5 - 0.5 * np.cos(lr_ramp * np.pi)
             lr_ramp = lr_ramp * min(1.0, t / 0.05)
@@ -208,36 +218,36 @@ class SamInference(BaseInference):
                                                    randomize_noise=False,
                                                    sam_masks=d_refined_resized_invmap,
                                                    sam_features=d_latents,
-                                                   sam_idxes=[3, 5, 7, 9])
+                                                   sam_idxes=sam_idxes)
 
             # compute the reconstruction losses using smaller 256x256 images
             rec = F.interpolate(rec_full, size=(256, 256), mode='area').clamp(-1, 1)
 
             # image reconstruction losses
             rec_losses = 0.0
-            rec_losses += F.mse_loss(rec_full, images)
-            rec_losses += self.lpips_loss(rec, images_resize)
+            rec_losses += F.mse_loss(rec_full, images) * self.opts.sam_rec_l2_lambda
+            rec_losses += self.lpips_loss(rec, images_resize) * self.opts.sam_rec_lpips_lambda
             log_str += f"rec: {rec_losses:.3f} "
+
             # latent regularization
             latent_losses = 0.0
 
-            mvg = compute_mvg(d_latents, "W+", self.d_stats["mean_v"], self.d_stats["inv_cov_v"]) * 1e-8
+            mvg = compute_mvg(d_latents, "W+", self.d_stats["mean_v"], self.d_stats["inv_cov_v"]) * self.opts.sam_lat_mvg_lambda
             latent_losses += mvg
             log_str += f"mvg: {mvg:.3f} "
 
-            delta = delta_loss(d_latents["W+"]) * 1e-3
+            delta = delta_loss(d_latents["W+"]) * self.opts.sam_lat_delta_lambda
             latent_losses += delta
             log_str += f"delta: {delta:.3f} "
 
-            frec = F.mse_loss(d_latents["F4"], d_latents_init["F4"]) * 5
-            frec += F.mse_loss(d_latents["F6"], d_latents_init["F6"]) * 5
-            frec += F.mse_loss(d_latents["F8"], d_latents_init["F8"]) * 5
-            frec += F.mse_loss(d_latents["F10"], d_latents_init["F10"]) * 5
+            frec = 0.0
+            for k in d_latents.keys():
+                frec += F.mse_loss(d_latents[k], d_latents_init[k]) * self.opts.sam_lat_frec_lambda
             latent_losses += frec
             log_str += f"frec: {frec:.3f} "
             # update the parameters
             optimizer.zero_grad()
-            (rec_losses + latent_losses).backward()
+            (self.opts.sam_rec_lambda * rec_losses + self.opts.sam_lat_lambda * latent_losses).backward()
             optimizer.step()
             if i % 250 == 0:
                 print(log_str)
@@ -249,7 +259,7 @@ class SamInference(BaseInference):
                                                  randomize_noise=False,
                                                  sam_masks=d_refined_resized_invmap,
                                                  sam_features=d_latents,
-                                                 sam_idxes=[3, 5, 7, 9])
+                                                 sam_idxes=sam_idxes)
         return images, result_latent, None
 
     def edit(self, images, images_resize, image_path, editor):
