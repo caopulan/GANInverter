@@ -14,7 +14,7 @@ TODO
 
 ## Inference
 
-```
+```bash
 python scripts/infer.py \
 	--config configs/e4e/e4e_ffhq_r50.yaml \
 	--test_dataset_path /path/to/test/data \
