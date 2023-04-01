@@ -65,6 +65,9 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--dhr_theta1', default=0.7, type=float, help='theta1 for domain-specific segmentation')
 		self.parser.add_argument('--dhr_theta2', default=0.8, type=float, help='theta2 for domain-specific segmentation')
 
+		# arguments for restyle inversion
+		self.parser.add_argument('--iteration', default=5, type=int, help='')
+
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')
 		self.parser.add_argument('--edit_factor', type=float, default=1.0, help='the weight of interfacegan direction')

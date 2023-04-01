@@ -44,11 +44,12 @@ class BaseOptions:
         # Model options
         self.parser.add_argument('--checkpoint_path', default=None, type=str, help='Path to model checkpoint.')
         self.parser.add_argument('--stylegan_weights', default="", type=str, help='Path to StyleGAN model weights.')
-        self.parser.add_argument('--encoder_type', default='Encoder4Editing', type=str, help='Which encoder to use')
+        self.parser.add_argument('--encoder_type', default='ProgressiveBackboneEncoder', type=str, help='Which encoder to use')
         self.parser.add_argument('--start_from_latent_avg', action='store_true', help='Whether to add average latent '
                                                                                       'vector to generate codes from '
                                                                                       'encoder.')
         self.parser.add_argument('--learn_in_w', action='store_true', help='Whether to learn in w space instead of w+')
+        self.parser.add_argument('--input_nc', default=3, type=int, help='number of channels of the first encoder layer')
         self.parser.add_argument('--layers', default=50, type=int, help='Number of layers of backbone')
 
     def parse(self):
