@@ -4,6 +4,7 @@ from .optim_infer import OptimizerInference
 from .pti_infer import PTIInference
 from .dhr_infer import DHRInference
 from .sam_infer import SamInference
+from .restyle_infer import RestyleInference
 from inference.inference import BaseInference
 
 
@@ -22,6 +23,8 @@ class TwoStageInference():
             self.embedding_module = OptimizerInference(opts)
         elif embed_mode == 'code':
             self.embedding_module = CodeInference(opts)
+        elif embed_mode == 'restyle':
+            self.embedding_module = RestyleInference(opts)
         else:
             raise Exception(f'Wrong embedding mode: {embed_mode}.')
 
