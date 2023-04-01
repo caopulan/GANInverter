@@ -521,7 +521,8 @@ class Generator(nn.Module):
             feature_idx=None,
             sam_masks=None,
             sam_features=None,
-            sam_idxes=None
+            sam_idxes=None,
+            hfgi_conditions=None
     ):
         featuremap = None
         if not input_is_latent:
@@ -586,6 +587,10 @@ class Generator(nn.Module):
             if sam_idxes is not None:
                 if i in sam_idxes:
                     out = out + sam_masks[f'F{i + 1}'] * sam_features[f'F{i + 1}']
+
+            if i == 7 and hfgi_conditions is not None:
+                # 11 for 256, 9 for 128， 7 for 64
+                out = out * (1 + hfgi_conditions[0]) + hfgi_conditions[1]
 
             if feature_idx is not None and i+1 == feature_idx:
                 if return_featuremap:

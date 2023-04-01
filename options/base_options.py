@@ -44,7 +44,7 @@ class BaseOptions:
         # Model options
         self.parser.add_argument('--checkpoint_path', default=None, type=str, help='Path to model checkpoint.')
         self.parser.add_argument('--stylegan_weights', default="", type=str, help='Path to StyleGAN model weights.')
-        self.parser.add_argument('--encoder_type', default='ProgressiveBackboneEncoder', type=str, help='Which encoder to use')
+        self.parser.add_argument('--encoder_type', default='Encoder4Editing', type=str, help='Which encoder to use')
         self.parser.add_argument('--start_from_latent_avg', action='store_true', help='Whether to add average latent '
                                                                                       'vector to generate codes from '
                                                                                       'encoder.')

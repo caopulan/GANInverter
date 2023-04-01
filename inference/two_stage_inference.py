@@ -1,5 +1,6 @@
 from .code_infer import CodeInference
 from .encoder_infer import EncoderInference
+from .hfgi_infer import HFGIInference
 from .optim_infer import OptimizerInference
 from .pti_infer import PTIInference
 from .dhr_infer import DHRInference
@@ -35,6 +36,8 @@ class TwoStageInference():
             self.refinement_module = DHRInference(opts)
         elif refine_mode == 'sam':
             self.refinement_module = SamInference(opts)
+        elif refine_mode == 'hfgi':
+            self.refinement_module = HFGIInference(opts)
         elif refine_mode is None:
             self.refinement_module = None
         else:
