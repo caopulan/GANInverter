@@ -67,10 +67,10 @@ class RestyleInference(BaseInference):
                                                      input_is_latent=True,
                                                      randomize_noise=False,
                                                      return_latents=True)
-                for path, inv_img in zip(image_path, images):
-                    basename = os.path.basename(path).split('.')[0] + '_' + str(iter)
-                    inv_result = tensor2im(inv_img)
-                    inv_result.save(os.path.join(self.opts.output_dir, 'inversion', f'{basename}.jpg'))
+                # for path, inv_img in zip(image_path, images):
+                #     basename = os.path.basename(path).split('.')[0] + '_' + str(iter)
+                #     inv_result = tensor2im(inv_img)
+                #     inv_result.save(os.path.join(self.opts.output_dir, 'inversion', f'{basename}.jpg'))
 
         return images, result_latent, None
 
