@@ -54,6 +54,8 @@ class Encoder(nn.Module):
             encoder = psp_encoders.BackboneEncoderUsingLastLayerIntoWPlus(self.opts.layers, 'ir_se', self.opts)
         elif self.opts.encoder_type == 'Encoder4Editing':
             encoder = psp_encoders.Encoder4Editing(50, 'ir_se', self.opts)
+        elif self.opts.encoder_type == 'ProgressiveBackboneEncoder':
+            encoder = psp_encoders.ProgressiveBackboneEncoder(50, 'ir_se', self.opts)
         else:
             raise Exception('{} is not a valid encoders'.format(self.opts.encoder_type))
         return encoder

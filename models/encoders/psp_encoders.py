@@ -185,7 +185,7 @@ class Encoder4Editing(Module):
             unit_module = bottleneck_IR
         elif mode == 'ir_se':
             unit_module = bottleneck_IR_SE
-        self.input_layer = Sequential(Conv2d(3, 64, (3, 3), 1, 1, bias=False),
+        self.input_layer = Sequential(Conv2d(opts.input_nc, 64, (3, 3), 1, 1, bias=False),
                                       BatchNorm2d(64),
                                       PReLU(64))
         modules = []
@@ -238,6 +238,62 @@ class Encoder4Editing(Module):
                 p1 = _upsample_add(p2, self.latlayer2(c1))  # FPN's fine features
                 features = p1
             delta_i = self.styles[i](features)
+            w[:, i] += delta_i
+        return w
+
+
+class ProgressiveBackboneEncoder(Module):
+    """
+    The simpler backbone architecture used by ReStyle where all style vectors are extracted from the final 16x16 feature
+    map of the encoder. This classes uses the simplified architecture applied over an ResNet IRSE50 backbone with the
+    progressive training scheme from e4e_modules.
+    Note this class is designed to be used for the human facial domain.
+    """
+    def __init__(self, num_layers, mode='ir', opts=None):
+        super(ProgressiveBackboneEncoder, self).__init__()
+        assert num_layers in [50, 100, 152], 'num_layers should be 50,100, or 152'
+        assert mode in ['ir', 'ir_se'], 'mode should be ir or ir_se'
+        blocks = get_blocks(num_layers)
+        if mode == 'ir':
+            unit_module = bottleneck_IR
+        elif mode == 'ir_se':
+            unit_module = bottleneck_IR_SE
+
+        self.input_layer = Sequential(Conv2d(opts.input_nc, 64, (3, 3), 1, 1, bias=False),
+                                      BatchNorm2d(64),
+                                      PReLU(64))
+        modules = []
+        for block in blocks:
+            for bottleneck in block:
+                modules.append(unit_module(bottleneck.in_channel,
+                                           bottleneck.depth,
+                                           bottleneck.stride))
+        self.body = Sequential(*modules)
+
+        self.styles = nn.ModuleList()
+        log_size = int(math.log(opts.resolution, 2))
+        self.style_count = 2 * log_size - 2
+        for i in range(self.style_count):
+            style = GradualStyleBlock(512, 512, 16)
+            self.styles.append(style)
+        self.progressive_stage = 18
+
+    def get_deltas_starting_dimensions(self):
+        ''' Get a list of the initial dimension of every delta from which it is applied '''
+        return list(range(self.style_count))  # Each dimension has a delta applied to
+
+    def forward(self, x):
+        x = self.input_layer(x)
+        x = self.body(x)
+
+        # get initial w0 from first map2style layer
+        w0 = self.styles[0](x)
+        w = w0.repeat(self.style_count, 1, 1).permute(1, 0, 2)
+
+        # learn the deltas up to the current stage
+        stage = self.progressive_stage
+        for i in range(1, min(stage + 1, self.style_count)):
+            delta_i = self.styles[i](x)
             w[:, i] += delta_i
         return w
 
