@@ -52,9 +52,8 @@ class HFGIInference(BaseInference):
                                                  return_latents=True,
                                                  randomize_noise=False,
                                                  hfgi_conditions=conditions)
-            hfgi_info = [{'generator': self.decoder.state_dict()}]
 
-        return images, result_latent, hfgi_info
+        return images, result_latent, None
 
     def edit(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info, editor):
         images, codes, refine_info = self.inverse(images, images_resize, image_paths, emb_codes, emb_images, emb_info)
