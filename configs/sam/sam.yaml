@@ -1,9 +1,9 @@
 refine_mode: 'sam'
-test_dataset_path: "/share/dataset/CelebA-HQ/"
+test_dataset_path: "./data/CelebA-HQ/test"
 test_batch_size: 1
 test_workers: 0
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
-output_dir: './sam_infer_noF8'
+output_dir: './inference_result/sam'
 
 # SAM options
 latent_names: "W+,F4,F6,F10"
@@ -15,3 +15,4 @@ sam_rec_lpips_lambda: 1.
 sam_lat_mvg_lambda: 1e-8
 sam_lat_delta_lambda: 1e-3
 sam_lat_frec_lambda: 5.
+

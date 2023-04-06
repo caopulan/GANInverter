@@ -1,4 +1,4 @@
 refine_mode: 'hfgi'
-test_dataset_path: "/share/dataset/CelebA-HQ/"
+test_dataset_path: "./data/CelebA-HQ/test"
 test_batch_size: 1
-output_dir: './hfgi_infer'
+output_dir: './inference_result/hfgi'
