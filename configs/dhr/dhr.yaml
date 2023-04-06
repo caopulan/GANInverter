@@ -1,3 +1,4 @@
+exp_dir: 'experiments/dhr'
 refine_mode: 'dhr'
 test_batch_size: 1
 
