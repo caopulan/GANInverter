@@ -229,11 +229,14 @@ class ModulatedConv2d(nn.Module):
             f'upsample={self.upsample}, downsample={self.downsample})'
         )
 
-    def forward(self, input, style):
+    def forward(self, input, style, weights_delta=None):
         batch, in_channel, height, width = input.shape
 
         style = self.modulation(style).view(batch, 1, in_channel, 1, 1)
-        weight = self.scale * self.weight * style
+        if weights_delta is None:
+            weight = self.scale * self.weight * style
+        else:
+            weight = self.scale * (self.weight * (1 + weights_delta) * style)
 
         if self.demodulate:
             demod = torch.rsqrt(weight.pow(2).sum([2, 3, 4]) + 1e-8)
@@ -309,7 +312,7 @@ class StyledConv(nn.Module):
             style_dim,
             upsample=False,
             blur_kernel=[1, 3, 3, 1],
-            demodulate=True,
+            demodulate=True
     ):
         super().__init__()
 
@@ -328,8 +331,8 @@ class StyledConv(nn.Module):
         # self.activate = ScaledLeakyReLU(0.2)
         self.activate = FusedLeakyReLU(out_channel)
 
-    def forward(self, input, style, noise=None):
-        out = self.conv(input, style)
+    def forward(self, input, style, noise=None, weights_delta=None):
+        out = self.conv(input, style, weights_delta=weights_delta)
         out = self.noise(out, noise=noise)
         # out = out + self.bias
         out = self.activate(out)
@@ -347,8 +350,8 @@ class ToRGB(nn.Module):
         self.conv = ModulatedConv2d(in_channel, 3, 1, style_dim, demodulate=False)
         self.bias = nn.Parameter(torch.zeros(1, 3, 1, 1))
 
-    def forward(self, input, style, skip=None):
-        out = self.conv(input, style)
+    def forward(self, input, style, skip=None, weights_delta=None):
+        out = self.conv(input, style, weights_delta)
         out = out + self.bias
 
         if skip is not None:
@@ -522,9 +525,14 @@ class Generator(nn.Module):
             sam_masks=None,
             sam_features=None,
             sam_idxes=None,
-            hfgi_conditions=None
+            hfgi_conditions=None,
+            weights_deltas=None,
     ):
         featuremap = None
+        total_convs = len(self.convs) + len(self.to_rgbs) + 2   # +2 for first conv and toRGB
+        if weights_deltas is None:
+            weights_deltas = [None] * total_convs
+
         if not input_is_latent:
             styles = [self.style(s) for s in styles]    # z -> w
 
@@ -565,11 +573,11 @@ class Generator(nn.Module):
             latent = torch.cat([latent, latent2], 1)
 
         out = self.input(latent)
-        out = self.conv1(out, latent[:, 0], noise=noise[0])
-
-        skip = self.to_rgb1(out, latent[:, 1])
+        out = self.conv1(out, latent[:, 0], noise=noise[0], weights_delta=weights_deltas[0])
+        skip = self.to_rgb1(out, latent[:, 1], weights_delta=weights_deltas[1])
 
         i = 1
+        weight_idx = 2
         for conv1, conv2, noise1, noise2, to_rgb in zip(
                 self.convs[::2], self.convs[1::2], noise[1::2], noise[2::2], self.to_rgbs
         ):
@@ -582,7 +590,7 @@ class Generator(nn.Module):
                         out = out * mask + offset * (1-mask)
                     else:
                         out = out + offset
-            out = conv1(out, latent[:, i], noise=noise1)
+            out = conv1(out, latent[:, i], noise=noise1, weights_delta=weights_deltas[weight_idx])
 
             if sam_idxes is not None:
                 if i in sam_idxes:
@@ -601,10 +609,11 @@ class Generator(nn.Module):
                         # out = out + offset * (1-mask)
                     else:
                         out = out + offset
-            out = conv2(out, latent[:, i + 1], noise=noise2)
-            skip = to_rgb(out, latent[:, i + 2], skip)
+            out = conv2(out, latent[:, i + 1], noise=noise2, weights_delta=weights_deltas[weight_idx + 1])
+            skip = to_rgb(out, latent[:, i + 2], skip, weights_delta=weights_deltas[weight_idx + 2])
 
             i += 2
+            weight_idx += 3
 
         image = skip
 
