@@ -66,7 +66,15 @@ class TestOptions(BaseOptions):
 		self.parser.add_argument('--dhr_theta2', default=0.8, type=float, help='theta2 for domain-specific segmentation')
 
 		# arguments for restyle inversion
-		self.parser.add_argument('--iteration', default=5, type=int, help='')
+		self.parser.add_argument('--restyle_iteration', default=5, type=int, help='')
+
+		# arguments for hyperstyle inversion
+		self.parser.add_argument('--hypernet_checkpoint_path', default=None, type=str, help='Path to hypermodel checkpoint.')
+		self.parser.add_argument('--hypernet_input_nc', default=6, type=int, help='')
+		self.parser.add_argument('--hyperstyle_iteration', default=5, type=int, help='')
+		self.parser.add_argument('--hyperstyle_encoder_type', default='SharedWeightsHyperNetResNet', type=str, help='')
+		self.parser.add_argument('--layers_to_tune', default='5,6,8,9,11,12,14,15,17,18,20,21,23,24', type=str, help='')
+		self.parser.add_argument('--n_hypernet_outputs', default=26, type=int, help='1024-26, 512-23, 256-20')
 
 		# arguments for edit script
 		self.parser.add_argument('--edit_mode', type=str, default='interfacegan', help='which way to edit images')

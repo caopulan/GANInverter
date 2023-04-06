@@ -51,7 +51,7 @@ class RestyleInference(BaseInference):
 
     def inverse(self, images, images_resize, image_path, **kwargs):
         with torch.no_grad():
-            for iter in range(self.opts.iteration):
+            for iter in range(self.opts.restyle_iteration):
                 if iter == 0:
                     avg_image = torch.nn.AdaptiveAvgPool2d((256, 256))(self.avg_image)
                     avg_images = avg_image.repeat(images_resize.shape[0], 1, 1, 1)
