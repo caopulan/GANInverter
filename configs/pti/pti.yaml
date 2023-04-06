@@ -1,5 +1,5 @@
 refine_mode: 'pti'
-test_dataset_path: "/share/dataset/CelebA-HQ/"
+test_dataset_path: './data/CelebA-HQ/test'
 test_batch_size: 1
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
 output_dir: './pti_infer'
