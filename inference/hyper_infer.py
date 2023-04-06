@@ -11,10 +11,10 @@ from utils.train_utils import load_train_checkpoint
 from inference.inference import BaseInference
 
 
-class HFGIInference(BaseInference):
+class HyperstyleInference(BaseInference):
 
     def __init__(self, opts, decoder=None):
-        super(HFGIInference, self).__init__()
+        super(HyperstyleInference, self).__init__()
         self.opts = opts
         self.device = 'cuda'
         self.opts.device = self.device
@@ -36,9 +36,9 @@ class HFGIInference(BaseInference):
                 self.decoder.load_state_dict(decoder_checkpoint['g_ema'])
 
         self.align = ResidualAligner().to(self.device).eval()
-        self.align.load_state_dict(checkpoint['align'], strict=False)
+        self.align.load_state_dict(get_keys(checkpoint['encoder'], 'grid_align'), strict=False)
         self.residue = ResidualEncoder().to(self.device).eval()
-        self.residue.load_state_dict(checkpoint['res'], strict=False)
+        self.residue.load_state_dict(get_keys(checkpoint['encoder'], 'residue'), strict=False)
 
     def inverse(self, images, images_resize, image_paths, emb_codes, emb_images, emb_info):
         with torch.no_grad():

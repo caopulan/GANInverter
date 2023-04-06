@@ -6,6 +6,7 @@ from .pti_infer import PTIInference
 from .dhr_infer import DHRInference
 from .sam_infer import SamInference
 from .restyle_infer import RestyleInference
+from .hyper_infer import HyperstyleInference
 from inference.inference import BaseInference
 
 
@@ -38,6 +39,8 @@ class TwoStageInference():
             self.refinement_module = SamInference(opts)
         elif refine_mode == 'hfgi':
             self.refinement_module = HFGIInference(opts)
+        elif refine_mode == 'hyperstyle':
+            self.refinement_module = HyperstyleInference(opts)
         elif refine_mode is None:
             self.refinement_module = None
         else:

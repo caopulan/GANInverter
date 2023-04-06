@@ -20,7 +20,7 @@ def load_train_checkpoint(opts, best=False):
         else:
             previous_train_ckpt = torch.load(opts.checkpoint_path, map_location='cpu')
 
-    previous_train_ckpt = convert_weight(previous_train_ckpt)
+    previous_train_ckpt = convert_weight(previous_train_ckpt, opts)
     if previous_train_ckpt is not None:
         opts.checkpoint_path = train_ckpt_path
     return previous_train_ckpt
@@ -54,20 +54,39 @@ def requires_grad(model, flag=True):
         p.requires_grad = flag
 
 
-def convert_weight(weight):
+def convert_weight(weight, opts):
     """Convert psp/e4e weights from original repo to GAN Inverter."""
     if weight is not None:
         if 'encoder' not in weight:
             logger.info('Resume from official weight. Converting to GAN Inverter weight.......')
             encoder_weight, decoder_weight = dict(), dict()
+            if opts.refine_mode == 'hfgi':
+                align_weight, res_weight = dict(), dict()
+            elif opts.refine_mode == 'hyperstyle':
+                hypernet_weight = dict()
             for k, v in weight['state_dict'].items():
                 if k.startswith('encoder.'):
                     encoder_weight[k] = v
                 elif k.startswith('decoder.'):
                     decoder_weight[k[8:]] = v
+
+                if opts.refine_mode == 'hfgi':
+                    if k.startswith('residue.'):
+                        res_weight[k[8:]] = v
+                    elif k.startswith('grid_align.'):
+                        align_weight[k[11:]] = v
+                elif opts.refine_mode == 'hyperstyle':
+                    if k.startswith('hypernet.'):
+                        hypernet_weight[k[9:]] = v
+
             encoder_weight['latent_avg'] = weight['latent_avg']
             weight = dict(
                 encoder=encoder_weight,
                 decoder=decoder_weight,
             )
+            if opts.refine_mode == 'hfgi':
+                weight['align'] = align_weight
+                weight['res'] = res_weight
+            elif opts.refine_mode == 'hyperstyle':
+                weight['hypernet'] = hypernet_weight
     return weight
