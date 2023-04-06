@@ -1,5 +1,4 @@
-embed_mode: 'encoder'
-refine_mode: 'hfgi'
+refine_mode: 'hyperstyle'
 test_dataset_path: "/home/ssd1/Database/CelebA-HQ/test100/"
 test_batch_size: 1
-output_dir: './hfgi_infer'
+output_dir: './hyperstyle_infer'
