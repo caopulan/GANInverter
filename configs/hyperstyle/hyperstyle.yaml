@@ -1,7 +1,6 @@
+embed_mode: 'encoder'
 refine_mode: 'hyperstyle'
-checkpoint_path: './pretrained_models/e4e_ffhq_encode.pt'
-hypernet_checkpoint_path: './pretrained_models/hyperstyle_ffhq.pt'
-test_dataset_path: "/home/ssd1/Database/CelebA-HQ/test100/"
+test_dataset_path: "./data/CelebA-HQ/test"
 test_batch_size: 1
-output_dir: './hyperstyle_infer'
+output_dir: './inference_result/hyperstyle'
 hyperstyle_iteration: 5
