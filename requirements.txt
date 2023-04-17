@@ -1,6 +1,9 @@
 loguru
+tqdm
 matplotlib
 ninja
 opencv-python
 pyyaml
+scikit-image
 wandb
+validators
