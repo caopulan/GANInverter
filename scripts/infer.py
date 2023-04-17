@@ -28,10 +28,10 @@ def save_intermediate(info_dict, output_dir, basename, keys):
             # image tensor
             if v.dim() == 4 and v.shape[0] == 1 and v.shape[1] == 3:
                 img = tensor2im(v[0])
-                img.save(os.path.join(output_dir, k, f'{basename}.jpg'))
+                img.save(os.path.join(output_dir, k, f'{basename}.png'))
             elif v.dim() == 3 and v.shape[0] == 3:
                 img = tensor2im(v)
-                img.save(os.path.join(output_dir, k, f'{basename}.jpg'))
+                img.save(os.path.join(output_dir, k, f'{basename}.png'))
             else:  # tensor but not image
                 torch.save(v, os.path.join(output_dir, k, f'{basename}.pt'))
         # model weight
@@ -40,7 +40,7 @@ def save_intermediate(info_dict, output_dir, basename, keys):
         # numpy array
         elif isinstance(v, np.ndarray):
             if v.dtype == np.uint8:
-                cv2.imwrite(os.path.join(output_dir, k, f'{basename}.jpg'), v)
+                cv2.imwrite(os.path.join(output_dir, k, f'{basename}.png'), v)
             else:
                 np.save(os.path.join(output_dir, k, f'{basename}.npy'), v)
         else:
@@ -110,7 +110,7 @@ def main():
             if opts.output_resolution is not None and ((H, W) != opts.output_resolution):
                 inv_img = torch.nn.functional.resize(inv_img, opts.output_resolution)
             inv_result = tensor2im(inv_img)
-            inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.jpg'))
+            inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.png'))
 
             # save intermediate info
             if opts.save_intermediate:
