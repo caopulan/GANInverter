@@ -17,7 +17,7 @@ TODO
 
 ```
 python scripts/infer.py \
-	--config configs/e4e/e4e_ffhq_r50.yaml configs/hyperstyle/hyperstyle.yaml \
+	--config configs/hyperstyle/wencoder_ffhq_r50.yaml configs/hyperstyle/hyperstyle.yaml \
 	--test_dataset_path /path/to/test/data
     --output_dir /path/to/output/dir
     --checkpoint_path /path/to/e4e/weight
