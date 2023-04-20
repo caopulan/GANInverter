@@ -20,7 +20,6 @@ python scripts/infer.py \
 	--config configs/restyle/restyle_e4e_ffhq_r50.yaml \
 	--test_dataset_path /path/to/test/data
     --output_dir /path/to/output/dir
-    --checkpoint_path /path/to/restyle/weight
 ```
 
 ## Citation
