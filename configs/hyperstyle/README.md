@@ -20,8 +20,6 @@ python scripts/infer.py \
 	--config configs/hyperstyle/wencoder_ffhq_r50.yaml configs/hyperstyle/hyperstyle.yaml \
 	--test_dataset_path /path/to/test/data
     --output_dir /path/to/output/dir
-    --checkpoint_path /path/to/e4e/weight
-    --hypernet_checkpoint_path /path/to/hyperstyle/weight
 ```
 
 ## Citation
