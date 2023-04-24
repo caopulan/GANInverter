@@ -24,7 +24,7 @@ class EncoderInference(BaseInference):
             self.decoder = decoder
         else:
             self.decoder = Generator(opts.resolution, 512, 8).to(self.device)
-            self.decoder.train()
+            self.decoder.eval()
             if checkpoint is not None:
                 self.decoder.load_state_dict(checkpoint['decoder'], strict=True)
             else:

@@ -3,4 +3,4 @@ refine_mode: 'hfgi'
 test_dataset_path: "./data/CelebA-HQ/test"
 test_batch_size: 1
 output_dir: './inference_result/hfgi'
-checkpoint_path: "pretrained_models/hfgi/hfgi_ffhq_ori.pt"
+checkpoint_path: "pretrained_models/hfgi/hfgi_ffhq_official.pt"
