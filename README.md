@@ -102,19 +102,20 @@ As evaluation settings are different in previous inversion works, we conduct a b
 - See `scripts/test.py` for more details.
 
 | Refinement |    Embedding    | PSNR $\uparrow$ | MSE $\downarrow$ | LPIPS $\downarrow$ | ID $\uparrow$ | FID $\downarrow$ |
-| :--------: | :-------------: | :------------: | :-------------: | :---------------: | :----------: | :-------------: |
-|     -      | Optimization-W  |       -        |        -        |         -         |      -       |        -        |
-|     -      | Optimization-W+ |       -        |        -        |         -         |      -       |        -        |
-|     -      |       pSp       |    18.0348     |     0.0345      |      0.1591       |      -       |        -        |
-|     -      |       e4e       |    16.6616     |     0.0472      |      0.1974       |      -       |        -        |
-|     -      |      LSAP       |    17.4958     |     0.0391      |      0.1765       |      -       |        -        |
-|    PTI     |     pivot_w     |       24.6004       |        0.0082        |         0.0820         |      -       |        -        |
-|    PTI     |       e4e       |       -        |        -        |         -         |      -       |        -        |
-|    HFGI    |       e4e       |       -        |        -        |         -         |      -       |        -        |
-|    SAM     |       e4e       |       -        |        -        |         -         |      -       |        -        |
-|    SAM     |      LSAP       |       -        |        -        |         -         |      -       |        -        |
-|    DHR     |       e4e       |       -        |        -        |         -         |      -       |        -        |
-|    DHR     |      LSAP       |       -        |        -        |         -         |      -       |        -        |
+| :--------: | :-------------: |:---------------:|:----------------:|:------------------:| :----------: |:----------------:|
+|     -     | Optimization-W  |        -        |        -         |         -          |      -       |        -         |
+|     -      | Optimization-W+ |     20.5940     |      0.0242      |       0.1092       |      -       |     17.0812      |
+|     -      |       pSp       |     18.0348     |      0.0345      |       0.1591       |      -       |     25.2540      |
+|     -      |       e4e       |     16.6616     |      0.0472      |       0.1974       |      -       |     28.4952      |
+|     -      |      LSAP       |     17.4958     |      0.0391      |       0.1765       |      -       |        -         |
+| HyperStyle | W-encoder |     20.0864     |      0.0219      |       0.0985       | - |        -         |
+|    PTI    |     W-pivot     |     24.6004     |      0.0082      |       0.0820       |      -       |        -         |
+|    PTI     |       e4e       |        -        |        -         |         -          |      -       |        -         |
+|    HFGI    |       e4e       |        -        |        -         |         -          |      -       |        -         |
+|    SAM     |       e4e       |        -        |        -         |         -          |      -       |        -         |
+|    SAM     |      LSAP       |        -        |        -         |         -          |      -       |        -         |
+|    DHR     |       e4e       |        -        |        -         |         -          |      -       |        -         |
+|    DHR     |      LSAP       |        -        |        -         |         -          |      -       |        -         |
 
 **Note:** The results may be inconsistent with the reported results in our paper because of different implementations.
 
