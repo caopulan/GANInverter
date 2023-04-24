@@ -17,10 +17,14 @@ from criteria.lpips.lpips import LPIPS
 
 
 def main():
-
     opts = TestOptions().parse()
     if opts.checkpoint_path is None:
         opts.auto_resume = True
+
+    if opts.output_dir is None:
+        opts.output_dir = os.path.join(opts.exp_dir, 'inference_results')
+    os.makedirs(opts.output_dir, exist_ok=True)
+    os.makedirs(os.path.join(opts.output_dir, 'inversion'), exist_ok=True)
 
     inversion = TwoStageInference(opts)
     lpips_cri = LPIPS(net_type='alex').cuda().eval()
