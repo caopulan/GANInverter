@@ -1,12 +1,13 @@
 exp_dir: "experiments/e4e/ffhq_e4e_r50"
 output_dir: './inference_result/restyle'
+embed_mode: restyle
 
 # Data
 train_dataset_path: './data/FFHQ'
 test_dataset_path: './data/CelebA-HQ/test'
 
 # Hyper-parameter of training
-checkpoint_path: '/home/ldx/GANInverter-dev-restyle-hfgi/pretrained_models/restyle_e4e_ffhq_encode.pt'
+checkpoint_path: 'pretrained_models/restyle_e4e_ffhq_encode.pt'
 stylegan_weights: "pretrained_models/stylegan2-ffhq-config-f.pt"
 batch_size: 8
 workers: 8
@@ -14,6 +15,7 @@ test_batch_size: 8
 test_workers: 8
 start_from_latent_avg: False
 encoder_type: ProgressiveBackboneEncoder
+input_nc: 6
 
 # Image Loss
 lpips_lambda: 0.8
