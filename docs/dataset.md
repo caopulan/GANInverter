@@ -1,5 +1,27 @@
 # Dataset Instruction
 
+## Prepare Datasets
+Link dataset to ```./data/```
+```bash
+ln -sf /path/to/dataset data/
+```
+For example:
+```bash
+ln -sf /Database/FFHQ data/
+ln -sf /Database/CelebA-HQ data/
+```
+Default path in our configs:
+```bash
+# Human face
+data/FFHQ
+data/CelebA-HQ
+# Animal
+data/AFHQ
+# Church
+data/Lsun-church
+```
+---
+## Commonly Used Datasets
 |   Domain    |   Dataset    | Generator | Height | Width | Comment |
 | :---------: | :----------: | :-------: | :----: | :---: | :-----: |
 |    Face     |     [FFHQ](#ffhq)     | [StyleGAN2*](https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/stylegan2-ffhq-config-f.pkl)<br />[convert](https://drive.google.com/file/d/1fgehC3QTtEayc_AFdsCx-UkxU8d1d9zW/view?usp=sharing) |  1024  | 1024  |         |
@@ -13,8 +35,7 @@
 |     Car     |   [LSUN Car](#lsun)   | [StyleGAN2*](https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/stylegan2-car-config-f.pkl)<br />[convert](https://drive.google.com/file/d/1d5ATre9K1cVo9m6WCzjrONOPsMdhrHL3/view?usp=sharing) | 384 | 512 | Crop    |
 |   Church    | [LSUN Church](#lsun)  | [StyleGAN2*](https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/stylegan2-church-config-f.pkl)<br />[convert](https://drive.google.com/file/d/1TWeD0I2zfB53LAKoQ16hTnblZ2AhspJu/view?usp=sharing) | 256 | 256 |         |
 
-* ```*```: weight is from the original [StyleGAN2]([NVlabs/stylegan2: StyleGAN2 - Official TensorFlow Implementation (github.com)](https://github.com/NVlabs/stylegan2)) (TensorFlow-based), which needs to convert by [script](scripts/convert_weight.py). We also provide the converted weights, which are converted by [this implementation](https://github.com/dvschultz/stylegan2-ada-pytorch/blob/main/export_weights.py). 
-
+* ```*```: weight is from the original [StyleGAN2]([NVlabs/stylegan2: StyleGAN2 - Official TensorFlow Implementation (github.com)](https://github.com/NVlabs/stylegan2)) (TensorFlow-based), which needs to convert by [script](scripts/convert_weight.py). We also provide the converted weights, which are converted by [this implementation](https://github.com/dvschultz/stylegan2-ada-pytorch/blob/main/export_weights.py).
 
 ## Face Dataset
 We use FFHQ (70,000 images) for training and CelebA-HQ test dataset (2824 images) for testing.
