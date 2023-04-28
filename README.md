@@ -96,25 +96,26 @@ As evaluation settings are different in previous inversion works, we conduct a b
 - Images are generated and converted to uint8 to evaluate, except for ID and FID, which are evaluated on saved images (png format).
 - See `scripts/test.py` for more details.
 
-| Refinement |    Embedding    | PSNR $\uparrow$ | MSE $\downarrow$ | LPIPS $\downarrow$ | ID $\uparrow$ | FID $\downarrow$ | Latency (ms) |
-|:----------:|:---------------:|:---------------:|:----------------:|:------------------:|:-------------:|:----------------:|:------------:|
-|     -      | Optimization-W  |        -        |        -         |         -          |       -       |        -         |      -       |
-|     -      | Optimization-W+ |     20.5940     |      0.0242      |       0.1092       |     0.77      |     17.0812      |      -       |
-|     -      |       pSp       |     18.0348     |      0.0345      |       0.1591       |     0.56      |     25.2540      |      -       |
-|     -      |       e4e       |     16.6616     |      0.0472      |       0.1974       |     0.50      |     28.4952      |      -       |
-|     -      |      LSAP       |     17.4958     |      0.0391      |       0.1765       |     0.53      |     29.3118      |      -       |
-|     -      |   ReStyle-e4e   |     17.0903     |      0.0428      |       0.1904       |     0.51      |     25.5141      |      -       |
-| HyperStyle |    W-encoder    |     20.0864     |      0.0219      |       0.0985       |     0.74      |     21.6660      |      -       |
-|    PTI     |     W-pivot     |     24.6004     |      0.0082      |       0.0820       |       -       |        -         |      -       |
-|    HFGI    |       e4e       |     20.1402     |      0.0210      |       0.1166       |     0.68      |     16.0659      |      -       |
-|    SAM     |       e4e       |     20.5933     |      0.0193      |       0.1442       |     0.57      |     17.3631      |      -       |
-|    SAM     |      LSAP       |     21.6179     |      0.0152      |       0.1205       |     0.60      |     15.2710      |      -       |
-|    DHR     |       e4e       |     28.1661     |      0.0035      |       0.0438       |     0.87      |      5.9960      |      -       |
-|    DHR     |      LSAP       |        -        |        -         |         -          |       -       |        -         |      -       |
+|  Refinement   |    Embedding    | PSNR $\uparrow$ | MSE $\downarrow$ | LPIPS $\downarrow$ | ID $\uparrow$ | FID $\downarrow$ | Latency (ms) |
+|:-------------:|:---------------:|:---------------:|:----------------:|:------------------:|:-------------:|:----------------:|:------------:|
+|       -       | Optimization-W  |     15.8460     |      0.0670      |       0.1967       |     0.32      |     25.7447      |      -       |
+|       -       | Optimization-W+ |     20.5940     |      0.0242      |       0.1092       |     0.77      |     17.0812      |      -       |
+|       -       |       pSp       |     18.0348     |      0.0345      |       0.1591       |     0.56      |     25.2540      |      -       |
+|       -       |       e4e       |     16.6616     |      0.0472      |       0.1974       |     0.50      |     28.4952      |      -       |
+|       -       |      LSAP       |     17.4958     |      0.0391      |       0.1765       |     0.53      |     29.3118      |      -       |
+|       -       |   ReStyle-e4e   |     17.0903     |      0.0428      |       0.1904       |     0.51      |     25.5141      |      -       |
+|  HyperStyle   |    W-encoder    |     20.0864     |      0.0219      |       0.0985       |     0.74      |     21.6660      |      -       |
+| PTI $\dagger$ |     W-pivot     |     24.6004     |      0.0082      |       0.0820       |       -       |        -         |      -       |
+|     HFGI      |       e4e       |     20.1402     |      0.0210      |       0.1166       |     0.68      |     16.0659      |      -       |
+|      SAM      |       e4e       |     20.5933     |      0.0193      |       0.1442       |     0.57      |     17.3631      |      -       |
+|      SAM      |      LSAP       |     21.6179     |      0.0152      |       0.1205       |     0.60      |     15.2710      |      -       |
+|      DHR      |       e4e       |     28.1661     |      0.0035      |       0.0438       |     0.87      |      5.9960      |      -       |
+|      DHR      |      LSAP       |     28.2786     |      0.0034      |       0.0422       |     0.88      |      6.0594      |      -       |
 
 **Note:** 
+- $\dagger$: we don't apply regularization in PTI, following [issue](https://github.com/danielroich/PTI/blob/5f4c05726caa908a46537c5aaca6ebc8ea34201e/configs/hyperparameters.py#L9) and [official config]()
 - *We recommend using this benchmark and evaluation settings to evaluate inversion methods in future work.*
-- Latency is tested on a single RTX3090 of batchsize 1.
+- Latency is tested on a single RTX3090 of batchsize 1 (TODO).
 - The results may be inconsistent with the reported results in our paper because of different implementations.
 - There are very small numerical differences in some values during multiple measurements.
 
