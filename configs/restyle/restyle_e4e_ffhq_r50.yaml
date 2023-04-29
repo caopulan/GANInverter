@@ -1,5 +1,6 @@
 exp_dir: "experiments/e4e/ffhq_e4e_r50"
 output_dir: './inference_result/restyle'
+embed_mode: restyle
 
 # Data
 train_dataset_path: './data/FFHQ'
@@ -14,6 +15,7 @@ test_batch_size: 8
 test_workers: 8
 start_from_latent_avg: False
 encoder_type: ProgressiveBackboneEncoder
+input_nc: 6
 
 # Image Loss
 lpips_lambda: 0.8
