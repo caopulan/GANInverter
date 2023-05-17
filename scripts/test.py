@@ -10,16 +10,21 @@ from PIL import Image
 from torch.utils.data import DataLoader
 from datasets.inference_dataset import InversionDataset
 from inference import TwoStageInference
+from utils.common import tensor2im
 from options.test_options import TestOptions
 import torchvision.transforms as transforms
 from criteria.lpips.lpips import LPIPS
 
 
 def main():
-
     opts = TestOptions().parse()
     if opts.checkpoint_path is None:
         opts.auto_resume = True
+
+    if opts.output_dir is None:
+        opts.output_dir = os.path.join(opts.exp_dir, 'inference_results')
+    os.makedirs(opts.output_dir, exist_ok=True)
+    os.makedirs(os.path.join(opts.output_dir, 'inversion'), exist_ok=True)
 
     inversion = TwoStageInference(opts)
     lpips_cri = LPIPS(net_type='alex').cuda().eval()
@@ -61,11 +66,18 @@ def main():
         count += len(img_paths)
         emb_images, emb_codes, emb_info, refine_images, refine_codes, refine_info = \
             inversion.inverse(images, images_resize, img_paths)
-
+        H, W = emb_images.shape[2:]
         if refine_images is not None:
             images_inv, codes = refine_images, refine_codes
         else:
             images_inv, codes = emb_images, emb_codes
+
+        for path, inv_img in zip(img_paths, images_inv):
+            basename = os.path.basename(path).split('.')[0]
+            if opts.output_resolution is not None and ((H, W) != opts.output_resolution):
+                inv_img = torch.nn.functional.resize(inv_img, opts.output_resolution)
+            inv_result = tensor2im(inv_img)
+            inv_result.save(os.path.join(opts.output_dir, 'inversion', f'{basename}.png'))
 
         # Evaluation
         images_inv = float2uint2float(images_inv)

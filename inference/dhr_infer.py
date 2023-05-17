@@ -81,10 +81,15 @@ class DHRInference(BaseInference):
             refine_info['coarse_inv'] = coarse_image
 
             # face parsing
-            parsing_result = self.parsing(images)
-            mask_bg = parsing_result[[0, 3, -1, -2, -3]].sum(dim=0)
-            mask_parsing = (mask_bg < 0.5).float()
-            mask_parsing = mask_parsing[None, None]
+            try:
+                parsing_result = self.parsing(images)
+                mask_bg = parsing_result[[0, 3, -1, -2, -3]].sum(dim=0)
+                mask_parsing = (mask_bg < 0.5).float()
+                mask_parsing = mask_parsing[None, None]
+            except:
+                print('No face detected.')
+                mask_parsing = torch.ones((1, 1, self.opts.resolution, self.opts.resolution)).cuda()
+                parsing_result = torch.zeros((self.opts.resolution, self.opts.resolution)).cuda()
 
             # Superpixel
             superpixel = slic(cv2.imread(image_name[0]), n_segments=200, compactness=30, sigma=1)
