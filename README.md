@@ -28,13 +28,6 @@ We collect SOTA inversion methods and construct a uniform pipeline with more fea
     -  [x] Weight & bias (wandb).
     -  [x] Automatically resume training.
 
-We will release v2.0 around early 2023:
--  [ ] Documentation.
--  [ ] More inversion methods, including E2Style, Hyperstyle, SAM, HFGI.
--  [ ] Evaluation System.
--  [ ] More editing methods.
--  [ ] Make inversion easy to integrate in GAN-based downstream tasks.
-
 ## Recent Updates
 
 **We are working for supporting more methods' inference and conducting the benchmark.**
