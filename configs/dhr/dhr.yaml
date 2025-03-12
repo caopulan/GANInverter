@@ -1,6 +1,7 @@
 exp_dir: 'experiments/dhr'
 refine_mode: 'dhr'
 test_batch_size: 1
+output_dir: './inference_result/dhr'
 
 # coarse inv
 optim_step: 40

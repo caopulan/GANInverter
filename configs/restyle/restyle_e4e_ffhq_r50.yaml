@@ -1,8 +1,9 @@
 exp_dir: "experiments/e4e/ffhq_e4e_r50"
+output_dir: './inference_result/restyle'
 
 # Data
 train_dataset_path: './data/FFHQ'
-test_dataset_path: '/share/dataset/CelebA-HQ/test/'
+test_dataset_path: './data/CelebA-HQ/test'
 
 # Hyper-parameter of training
 checkpoint_path: '/home/ldx/GANInverter-dev-restyle-hfgi/pretrained_models/restyle_e4e_ffhq_encode.pt'
