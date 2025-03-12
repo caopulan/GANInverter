@@ -86,14 +86,11 @@ Note: ```E```/```O```/```H``` means encoder-based and optimization-based methods
 
 ## Benchmark 
 
-#### **Evaluating...... results will be reported soon**
-
 As evaluation settings are different in previous inversion works, we conduct a benchmark to better evaluate inversion methods based on our unified pipeline. See [Evaluation](#evaluation) for more details.
 
 **Evaluation Settings:**
 
 - **Dataset:** CelebA-HQ test split (2,824) images;
-
 - **ID:** identity similarity measured by [face recognition model]();
 - **LPIPS version:** VGG;
 - Images are generated and converted to uint8 to evaluate, except for ID and FID, which are evaluated on saved images (png format).
@@ -138,7 +135,7 @@ We follow two-stage inference in this repository. The base inference class `TwoS
 
 This uniform inversion process can easily combine two methods. **Users can try any combination of methods, not limited to those employed by the original authors.** For example, GANInverter makes it possible to connect ReStyle with HyperStyle by ```--embed_mode restyle --refine_mode hyperstyle``` or PTI + e4e by `--embed_mode e4e --refine_mode pti`. 
 
-:collision: You can run any method combination by setting their config files now. See [Inference](#inference) for more details.
+You can run any method combination by setting their config files now. See [Inference](#inference) for more details.
 
 For example:
 
